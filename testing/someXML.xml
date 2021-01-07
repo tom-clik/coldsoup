@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+
+<settings note="any">
+	
+	<viewport name="main">
+		<cs_defaults>
+			
+			<button>
+				
+				<colour>{buttoncolour}</colour>
+				
+				<icon>
+					<colour>{buttoncolour}</colour>
+					<background>
+						<colour>{buttonbg}</colour>
+					</background>
+					
+					<border>
+						<colour>{buttonbordercolour}</colour>
+						<width>0</width>
+					</border>
+
+					<height>40</height>
+					<padding>8 4</padding>
+					<width>26</width>
+				</icon>
+
+				<hover>
+					<icon>
+						<background>
+							<colour>{buttonbg_hover}</colour>
+						</background>
+						<border>
+							<colour>{buttonborderrollovercolour}</colour>
+						</border>
+						<colour>{buttonrollovercolour}</colour>
+					</icon>
+				</hover>
+
+				<caption>
+					<font>
+						<size>110%</size>
+					</font>
+					<padding>0.5em 0 0 0</padding>
+				</caption>
+
+				<disabled>
+					<opacity>0.2</opacity>
+				</disabled>
+
+				<button_spacing>4</button_spacing>
+				<icon_shape>arrow_thin</icon_shape>
+				<margin>0</margin>
+				<!-- <padding>default default default 4px</padding> -->
+				<rollovertime>100</rollovertime>
+				<showdisabled>true</showdisabled>
+				<showimage>true</showimage>
+				<showtext>false</showtext>
+				<padding>0</padding>
+				
+
+			</button>
+			
+		</cs_defaults>
+
+		<cs_settings>
+
+			<photo_backlink>
+				<margin>default 4px default default</margin>					
+			</photo_backlink>
+
+ 
+			<button_close>
+				<position>
+					<position>absolute</position>
+					<orientation_h>right</orientation_h>
+					<orientation_v>top</orientation_v>
+					<vertical>5</vertical>
+					<horizontal>5</horizontal>
+				</position>
+				<icon_shape>close_thin</icon_shape>
+				<width>15</width>
+				<icon>
+					<padding>0</padding>
+					<width>15</width>
+					<height>15</height>
+				</icon>
+			</button_close>
+		</cs_settings>
+
+		<cs_schemes>
+
+			<backlink>
+				<type_code>button</type_code>
+			</backlink>
+			
+			<next>
+				<margin>default default default 4px</margin>					
+			</next>
+
+			<paginator>
+
+				<pagination>
+					<paginator_hidelabel>1</paginator_hidelabel>
+					<paginator_format>none</paginator_format>
+					<buttons>		
+						
+						<icon>
+							<colour>{buttoncolour}</colour>
+							<background>
+								<colour>{buttonbg}</colour>
+							</background>
+							
+							<border>
+								<colour>{buttonbordercolour}</colour>
+								<width>1</width>
+							</border>
+
+							<height>40</height>
+							<padding>8 4</padding>
+							<width>26</width>
+						</icon>
+
+						<hover>
+							<icon>
+								<background>
+									<colour>{buttonbg_hover}</colour>
+								</background>
+								<colour>{buttonrollovercolour}</colour>
+								<border>
+									<colour>{buttonborderrollovercolour}</colour>
+								</border>
+							</icon>
+						</hover>
+
+						<disabled>
+							<opacity>0.2</opacity>
+						</disabled>
+
+
+						<margin>0</margin>
+						<rollovertime>100</rollovertime>
+						<showdisabled>true</showdisabled>
+						<showimage>true</showimage>
+						<showtext>false</showtext>
+						<padding>0</padding>
+						
+						<icon_shape>arrow_thin</icon_shape>
+					</buttons>
+				</pagination>
+			</paginator>
+
+		</cs_schemes>
+	</viewport>
+
+	<viewport name="mobile">
+		<cs_defaults>
+			<button>
+				<showtext>false</showtext>
+			</button>
+		</cs_defaults>
+
+	</viewport>
+
+</settings>
