@@ -13,14 +13,15 @@ Assumes Jsoup is installed in your server class path.
 1. Instantiate the component as a singleton in a shared scope, e.g. application
 
 ```cfml
-
-
+coldsoup = createObject("component", "coldsoup.coldSoup").init();
 ```
+
+2. Call static methods as required.
 
 ## Examples
 
 ```cfscript
-coldsoup = createObject("component", "coldsoup.coldSoup").init();
+
 
 // Parse some bad HTML
 
