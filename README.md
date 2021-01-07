@@ -25,7 +25,7 @@ like a CF array to be used as one. For further info, see the JSoup documentation
 
 ## Examples
 
-```cfscript
+```ColdFusion
 // Parse some bad HTML
 
 doc = coldSoup.parse(FileRead(ExpandPath("../testing/rubbish.html")));
