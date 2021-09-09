@@ -11,17 +11,16 @@ component {
 	public void function init() {
 
 				
-		this.jsoup = createObject( "java", "org.jsoup.Jsoup" );
-		this.parser = createObject( "java", "org.jsoup.parser.Parser" );
+		this.jsoup             = createObject( "java", "org.jsoup.Jsoup" );
+		this.parser            = createObject( "java", "org.jsoup.parser.Parser" );
 		variables.whitelistObj = createObject( "java", "org.jsoup.safety.Whitelist" );
-		variables.whiteLists = {};
-		this.XMLParser = this.parser.XMLParser();
-		this.xmlSyntax = createObject( "java", "org.jsoup.nodes.Document$OutputSettings$Syntax").xml;
-		this.Pretty = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").outline(true);
-		this.notPretty = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false);
-		
-		this.xml = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
-		this.prettyXML = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(false).syntax(this.xmlSyntax);
+		variables.whiteLists   = {};
+		this.XMLParser         = this.parser.XMLParser();
+		this.xmlSyntax         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings$Syntax").xml;
+		this.Pretty            = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").outline(true);
+		this.notPretty         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false);
+		this.xml               = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
+		this.prettyXML         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(false).syntax(this.xmlSyntax);
 		
 	}
 
@@ -35,12 +34,17 @@ component {
 	 *
 	 * The  replaceWhitespace option replaces `<br />` tags and `&nbsp;` with plain whitespace.
 	 *
-	 * @doc   jsoup document or a plain text string. Will return the same
-	 * @tag   tag or tag list to escape, e.g. "script,meta,style"
-	 * @wrap   tag to wrap around result e.g. "pre"
-	 * @replaceWhitespace   replaces `<br />` tags and `&nbsp;` with plain whitespace.
+	 * @doc                jsoup document or a plain text string. Will return the same
+	 * @tag                tag or tag list to escape, e.g. "script,meta,style"
+	 * @wrap               tag to wrap around result e.g. "pre"
+	 * @replaceWhitespace  replaces `<br />` tags and `&nbsp;` with plain whitespace.
 	 */
-	public function HTMLEscapeTag(required doc, required string tag, string wrap="", boolean replaceWhitespace="1") output=false {
+	public function HTMLEscapeTag(
+		required any 		doc, 
+		required string 	tag, 
+				 string 	wrap="", 
+				 boolean 	replaceWhitespace="1"
+		) output=false {
 
 		// Parse doc if needed
 		if( IsSimpleValue(arguments.doc) ) {
@@ -52,7 +56,7 @@ component {
 		// select our tags
 		local.elements = local.doc.select("#arguments.tag#");
 
-		for( local.i = 1; local.i LTE ArrayLen(local.elements) ; local.i = local.i+1) {			
+		for( local.i = 1; local.i <= ArrayLen(local.elements) ; local.i = local.i+1) {			
 			local.element = local.elements[local.i];
 
 			// prepare a blank textNode
@@ -86,11 +90,16 @@ component {
 
 	/**
 	 * Sanitize HTML by calling jsoup.clean() with specified whitelist
+	 *
+	 * @html         HTML string to clean
+	 * @whitelist    Name of whitelist -- either one of the standards (see getWhiteList() or the name of a custom white list (see addWhiteList()))
+	 * 
 	 */
 	public string function clean(required string html, whitelist="basic") {
 
 		local.whiteListObj = getWhitelist(arguments.whitelist);
-		local.rethtml = this.jsoup.clean(arguments.html,local.whiteListObj);
+		local.rethtml      = this.jsoup.clean(arguments.html,local.whiteListObj);
+		
 		return local.rethtml;
 	}
 
@@ -100,21 +109,21 @@ component {
 	public function parse(required html) {
 
 		local.node = this.jsoup.parse(arguments.html);
+		
 		return local.node;
 	}
 
 	/**
-	 * Set syntax to XML and parse
+	 * Set syntax to XML and get html
 	 */
 	public function getXML(required node) {
 
-		node.outputSettings(this.xml);
+		arguments.node.outputSettings(this.xml);
 		return node.html();
 	}
 
 	/**
-	 * @hint  Return pretty printed XML
-	 
+	 * Return pretty printed XML
 	 */
 	public function getPrettyXML(required node) {
 
@@ -130,7 +139,10 @@ component {
 	 * will use that.
 	 * 
 	 */
-	public function getHTML(required node, boolean pretty="1") {
+	public function getHTML(
+		required any      node, 
+		         boolean  pretty="1"
+	    ) {
 
 		if (arguments.pretty) {
 			arguments.node.outputSettings(this.Pretty);
@@ -144,8 +156,10 @@ component {
 	/**
 	 * See if HTML is valid according to specified whitelist
 	 */
-	//  do not rename - can't use `IsValid` in older CF as is in-built function 
-	public boolean function isValidHTML(required html, whitelist="basic") {
+	public boolean function isValidHTML(
+		required string    html, 
+		         string    whitelist="basic"
+		) {
 
 		local.whiteListObj = getWhitelist(arguments.whitelist);
 		return this.jsoup.isValid(arguments.html,local.whiteListObj);
@@ -162,19 +176,25 @@ component {
 	 * @name  name to use when cleaning/checking validity
 	 * @whitelist jsoup safelist object
 	 */
-	public void function addWhiteList(required string name, required whitelist) {
+	public void function addWhiteList(
+		required string  name, 
+		required object  whitelist) {
+		
+		if (! IsInstanceOf( obj=arguments.whitelist, type="org.jsoup.safety.Whitelist" )) {
+			throw("Invald white list object");
+		}
 
 		variables.whiteLists["#arguments.name#"] = arguments.whitelist;	
 
 	}
 
 	/**
-	 * Return whitelist from keyword e.g. basic for basic()
-	 *
+	 * @hint Return whitelist from keyword e.g. basic for basic()
+	 * 
 	 * @whitelist   none|basic|simpleText|relaxed|basicWithImages
 	 * 
-	 */
-	public function getWhitelist(required string whitelist) {
+	 **/
+	public object function getWhitelist(required string whitelist) {
 
 		switch(arguments.whitelist) {
 			case "none":
@@ -193,23 +213,25 @@ component {
 				local.whiteListObj = variables.whitelistObj.basicWithImages();
 				break;			
 			default:
+			
 			if (structKeyExists(variables.whitelists,arguments.whitelist)) {
 				local.whiteListObj = variables.whitelists[arguments.whitelist];
 			}
 			else {
-				throw("Whitelist #arguments.whitelist# not allowed");
+				throw("Whitelist #arguments.whitelist# not defined");
 			}
 
 		}
 
-		
 		return local.whiteListObj;
 	}
 
 	/**
 	 * Parse an XML document
 	 */
-	public function parseXML(required xml, baseurl="") {
+	public function parseXML(
+		required string xml, 
+				 string baseurl="") {
 
 		local.xmlObj = this.jsoup.parse(arguments.xml,arguments.baseurl,this.XMLParser);
 		return local.xmlObj;
@@ -220,10 +242,10 @@ component {
 	 */
 	public function XMLNode2Struct(required xmlNode) {
 
-		var retVal = getAttributes(arguments.xmlNode);
-		var testAtts = false;
-		var testchildren = false;
-		var child = false;
+		var retVal        = getAttributes(arguments.xmlNode);
+		var testAtts      = false;
+		var testchildren  = false;
+		var child         = false;
 			
 		// simple single text node is added as content field.
 		if (Trim(xmlNode.ownText()) neq "") {
@@ -278,10 +300,16 @@ component {
 	 * Data attributes will be returned as keys of a struct "data"
 	 * 
 	 */
-	public Struct function getAttributes(required xmlNode) {
+	public Struct function getAttributes(required object xmlNode) {
+
+		if (! IsInstanceOf(arguments.xmlNode, "org.jsoup.nodes.Element")) {
+			throw("Invalid xmlNode");
+		}
 
 		var retVal = {};
+
 		local.attributes = arguments.xmlNode.attributes().asList();
+
 		for (local.attribute in local.attributes) {
 			local.key = local.attribute.getKey();
 			if (Left(local.key,5) == "data-") {
@@ -300,11 +328,23 @@ component {
 
 	/**
 	 * Create a node
-	 */
-	public function createNode(required tagName, text, id, classes) {
+	 * 
+ 	 * @tagName       Tag name e.g. h2
+ 	 * @text          Text for tag.
+ 	 * @id            ID attribute for tag
+ 	 * @classes       Class attribute for tag
+ 	 **/
+	public function createNode(
+		required string tagName, 
+		         string text, 
+		         string id, 
+		         string classes
+		) {
 
 		var node = createObject("java", "org.jsoup.nodes.Element").init(
-				javacast('string', arguments.tagName));
+			Javacast('string', arguments.tagName)
+		);
+
 		if (IsDefined("arguments.text")) {
 			node.html(arguments.text);
 		}
@@ -324,7 +364,8 @@ component {
 	public function createTextNode(required string text) {
 
 		var node = createObject("java", "org.jsoup.nodes.TextNode").init(
-				javacast('string', arguments.text));
+			javacast('string', arguments.text)
+		);
 		
 		
 		return node;
