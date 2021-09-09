@@ -24,14 +24,14 @@ These can be searched with `select(selector)` where selector is a JQuery-like se
 
 ## Examples
 
-```ColdFusion
-// Parse some bad HTML
+```cfml
+// parse html into a document for searching/updating
+doc = coldSoup.parse(htmlDocument);
 
-doc = coldSoup.parse(FileRead(ExpandPath("../testing/rubbish.html")));
-displayCode(coldsoup.getHTML(doc));
-
-
+// return cleaned html
 html = coldSoup.clean(html="<script>bad code</script> text", whitelist="basic" );
+
+// create JSoup node without javing to JavaCast everything.
 node = coldSoup.createNode("h2","my heading");
 
 ```
