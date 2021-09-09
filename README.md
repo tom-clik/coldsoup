@@ -18,9 +18,9 @@ application.coldsoup = new coldSoup();
 
 2. Call static methods as required.
 
-3. Return type from `parse()` or `createNode()` is a [Jsoup Node](https://jsoup.org/apidocs/org/jsoup/nodes/Node.html).
+3. Return type from `parse()` is a [Jsoup Document](https://jsoup.org/apidocs/org/jsoup/nodes/Document.html).
 
-These can be searched with `select(selector)` where selector is a JQuery-like selector. The return value is sufficiently like a CF array to be used as one. For further info, see the JSoup documentation.
+These can be searched with `select(selector)` where selector is a JQuery-like selector. The return value is sufficiently like a CF array to be used as one. Each element is a Jsoup Node](https://jsoup.org/apidocs/org/jsoup/nodes/Node.html).
 
 ## Examples
 
