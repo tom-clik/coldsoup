@@ -6,9 +6,9 @@ Not a unit test package, just various methods showing usage.
 
 ## Usage
 
-Ensure the coldsoup component is in your component path somewhere.
+Ensure JSoup is nin your server class path and the coldsoup component is in a component path.
 
-E.g. for Lucee either add the folder to {lucee-web}/components/ 
+E.g. for Lucee either add the coldsoup folder to {lucee-web}/components/ 
 or add an additional resource in your component paths.
 
 Either way you will need to ensure the setting for "search local" is set to 
@@ -24,7 +24,7 @@ Either way you will need to ensure the setting for "search local" is set to
 
 setUpTests();
 
-// new style instantiation. Will call init()!.
+// new style instantiation will call init().
 coldSoup = new coldSoup();
 
 // Test 1.
@@ -32,7 +32,6 @@ coldSoup = new coldSoup();
 
 doc = coldSoup.parse(FileRead(ExpandPath("../testing/rubbish.html")));
 displayCode(coldsoup.getHTML(doc));
-
 
 // Test 2.
 // Parse some XML and display using prettyXML.
@@ -86,6 +85,7 @@ tag = coldSoup.createNode(tagName="h2",text="sub heading",id="myID",classes="big
 tag.attr("title","tag has title");
 tag.attr("data-test","Data test");
 WriteDump(coldSoup.getAttributes(tag));
+
 
 function displayCode(html) {
 	WriteOutput("<pre>" & HtmlEditFormat(arguments.html) & "<pre>");
