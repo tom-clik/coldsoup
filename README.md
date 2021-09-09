@@ -1,10 +1,10 @@
 # Coldsoup
 
-CFML wrapper for JSoup
+CFML wrapper for [JSoup](https://www.jsoup.org).
 
 ## Introduction
 
-Convenient component with methods for calling [JSoup](https://www.jsoup.org).
+Working with JSoup in CFML often requires JavaCasting variables and quite cumbersome syntax. This component provides simple CFML methods for working with JSoup.
 
 ## Usage
 
@@ -13,12 +13,12 @@ Assumes Jsoup is installed in your server class path.
 1. Instantiate the component as a singleton in a shared scope, e.g. application
 
 ```cfml
-coldsoup = createObject("component", "coldsoup.coldSoup").init();
+application.coldsoup = new coldSoup();
 ```
 
 2. Call static methods as required.
 
-3. Return type from `parse()` or `createNode()` is a JsoupNode.
+3. Return type from `parse()` or `createNode()` is a [Jsoup Node](https://jsoup.org/apidocs/org/jsoup/nodes/Node.html).
 
 These can be searched with `select(selector)` where selector is a JQuery-like selector. The return value is sufficiently like a CF array to be used as one. For further info, see the JSoup documentation.
 
@@ -28,7 +28,7 @@ These can be searched with `select(selector)` where selector is a JQuery-like se
 // Parse some bad HTML
 
 doc = coldSoup.parse(FileRead(ExpandPath("../testing/rubbish.html")));
-displayCode(coldsoup.gethtml(doc,true));
+displayCode(coldsoup.getHTML(doc));
 
 
 html = coldSoup.clean(html="<script>bad code</script> text", whitelist="basic" );
@@ -36,3 +36,4 @@ node = coldSoup.createNode("h2","my heading");
 
 ```
 
+For further examples, see `testing/coldsouptest.cfm`.
