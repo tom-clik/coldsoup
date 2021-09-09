@@ -31,7 +31,7 @@ coldSoup = new coldSoup();
 // Parse some bad HTML
 
 doc = coldSoup.parse(FileRead(ExpandPath("../testing/rubbish.html")));
-displayCode(coldsoup.gethtml(doc,true));
+displayCode(coldsoup.getHTML(doc));
 
 
 // Test 2.

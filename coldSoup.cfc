@@ -31,10 +31,14 @@ component {
 	 * Gets the outer HTML of a tag and sets the text  of a new node to be that. This is essentially the same
 	 * as HTMLEditFormat. By using wrap="pre" it's the same as HTMLCodeFormat
 	 *
-	 * TBC: whether this is still worth doing or whether there was an issue with those functions that this resolved.
+	 * TBC: whether this is still worth doing or whether there was an issue with those functions that's now resolved.
 	 *
 	 * The  replaceWhitespace option replaces `<br />` tags and `&nbsp;` with plain whitespace.
-	 * 
+	 *
+	 * @doc   jsoup document or a plain text string. Will return the same
+	 * @tag   tag or tag list to escape, e.g. "script,meta,style"
+	 * @wrap   tag to wrap around result e.g. "pre"
+	 * @replaceWhitespace   replaces `<br />` tags and `&nbsp;` with plain whitespace.
 	 */
 	public function HTMLEscapeTag(required doc, required string tag, string wrap="", boolean replaceWhitespace="1") output=false {
 
@@ -42,7 +46,7 @@ component {
 		if( IsSimpleValue(arguments.doc) ) {
 			local.doc = parse(arguments.doc);
 		} else {
-			local.doc = arguments.doc;
+			local.doc = Duplicate(arguments.doc);
 		}
 
 		// select our tags
@@ -120,7 +124,11 @@ component {
 	}
 
 	/**
-	 * Wrapper for html method with boolean for pretty printing
+	 * @hint Wrapper for Node.html() method with boolean for pretty printing
+	 *
+	 * NB sets the output settings for the node to pretty so subsequent calls to html()
+	 * will use that.
+	 * 
 	 */
 	public function getHTML(required node, boolean pretty="1") {
 
