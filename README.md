@@ -20,8 +20,7 @@ coldsoup = createObject("component", "coldsoup.coldSoup").init();
 
 3. Return type from `parse()` or `createNode()` is a JsoupNode.
 
-These can be searched with `select(selector)` where selector is a JQuery-like selector. The return value is sufficiently
-like a CF array to be used as one. For further info, see the JSoup documentation.
+These can be searched with `select(selector)` where selector is a JQuery-like selector. The return value is sufficiently like a CF array to be used as one. For further info, see the JSoup documentation.
 
 ## Examples
 

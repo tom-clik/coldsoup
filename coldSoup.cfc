@@ -8,19 +8,21 @@ component {
 	/**
 	 * Pseudo constructor
 	 */
-	public function init() {
+	public void function init() {
 
-		variables.whitelists = {};			
+				
 		this.jsoup = createObject( "java", "org.jsoup.Jsoup" );
-		variables.whitelistObj = createObject( "java", "org.jsoup.safety.Whitelist" );
 		this.parser = createObject( "java", "org.jsoup.parser.Parser" );
+		variables.whitelistObj = createObject( "java", "org.jsoup.safety.Whitelist" );
+		variables.whiteLists = {};
 		this.XMLParser = this.parser.XMLParser();
-		this.notPretty = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false);
 		this.xmlSyntax = createObject( "java", "org.jsoup.nodes.Document$OutputSettings$Syntax").xml;
 		this.Pretty = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").outline(true);
-		this.xml = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
+		this.notPretty = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false);
 		
-		return this;
+		this.xml = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
+		this.prettyXML = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(false).syntax(this.xmlSyntax);
+		
 	}
 
 	/**
@@ -73,11 +75,10 @@ component {
 	}
 
 	/**
-	 * Sanitize HTML by calling jsoup.clean() witht specified whitelist
+	 * Sanitize HTML by calling jsoup.clean() with specified whitelist
 	 */
-	public function clean(required html, whitelist="basic") {
+	public string function clean(required string html, whitelist="basic") {
 
-		var local = {};
 		local.whiteListObj = getWhitelist(arguments.whitelist);
 		local.rethtml = this.jsoup.clean(arguments.html,local.whiteListObj);
 		return local.rethtml;
@@ -107,10 +108,6 @@ component {
 	 */
 	public function getPrettyXML(required node) {
 
-		if (NOT IsDefined("this.prettyXML")) {
-			this.prettyXML = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(false).syntax(this.xmlSyntax);
-		}
-		
 		arguments.node.outputSettings(this.prettyXML);
 
 		return arguments.node.html();
@@ -139,36 +136,60 @@ component {
 		local.whiteListObj = getWhitelist(arguments.whitelist);
 		return this.jsoup.isValid(arguments.html,local.whiteListObj);
 	}
+	
+	/**
+	 * @hint Add custom whitelist to reference by name 
+	 *
+	 * To create your own whitelist, get one of the standard ones and modify it
+	 * with available methods
+	 *
+	 * https://jsoup.org/apidocs/org/jsoup/safety/Safelist.html
+	 * 
+	 * @name  name to use when cleaning/checking validity
+	 * @whitelist jsoup safelist object
+	 */
+	public void function addWhiteList(required string name, required whitelist) {
+
+		variables.whiteLists["#arguments.name#"] = arguments.whitelist;	
+
+	}
 
 	/**
 	 * Return whitelist from keyword e.g. basic for basic()
+	 *
+	 * @whitelist   none|basic|simpleText|relaxed|basicWithImages
+	 * 
 	 */
-	private function getWhitelist(required whitelist) {
+	public function getWhitelist(required string whitelist) {
 
-		if (NOT StructKeyExists(variables.whitelists,arguments.whitelist)) {
-			switch(arguments.whitelist) {
-				case "none":
-					variables.whitelists[arguments.whitelist] = variables.whitelistObj.none();
-					break;
-				case "basic":
-					variables.whitelists[arguments.whitelist] = variables.whitelistObj.basic();
-					break;
-				case "simpleText":
-					variables.whitelists[arguments.whitelist] = variables.whitelistObj.simpleText();
-					break;
-				case "relaxed":
-					variables.whitelists[arguments.whitelist] = variables.whitelistObj.relaxed();
-					break;
-				case "basicWithImages":
-					variables.whitelists[arguments.whitelist] = variables.whitelistObj.basicWithImages();
-					break;			
-				default:
-					throw("Whitelist #arguments.whitelist# not allowed");
-
+		switch(arguments.whitelist) {
+			case "none":
+				local.whiteListObj = variables.whitelistObj.none();
+				break;
+			case "basic":
+				local.whiteListObj = variables.whitelistObj.basic();
+				break;
+			case "simpleText":
+				local.whiteListObj = variables.whitelistObj.simpleText();
+				break;
+			case "relaxed":
+				local.whiteListObj = variables.whitelistObj.relaxed();
+				break;
+			case "basicWithImages":
+				local.whiteListObj = variables.whitelistObj.basicWithImages();
+				break;			
+			default:
+			if (structKeyExists(variables.whitelists,arguments.whitelist)) {
+				local.whiteListObj = variables.whitelists[arguments.whitelist];
+			}
+			else {
+				throw("Whitelist #arguments.whitelist# not allowed");
 			}
 
 		}
-		return variables.whitelists[arguments.whitelist];
+
+		
+		return local.whiteListObj;
 	}
 
 	/**
@@ -189,34 +210,49 @@ component {
 		var testAtts = false;
 		var testchildren = false;
 		var child = false;
+			
+		// simple single text node is added as content field.
+		if (Trim(xmlNode.ownText()) neq "") {
+			retVal["content"] = xmlNode.ownText();
+		}
 
 		for (child in arguments.xmlNode.children()) {
 			testAtts = child.attributes().size();
 			testchildren = child.children().size();
 
+
+			local.tagName = child.tagName();
+			// issues with jsoup not allowing eg. image or caption. Prefix anything with field- to get around this,
+			local.isFix = (ListFirst(local.tagName,"-") eq "field");
+			if (local.isFix) {
+				local.tagName = ListRest(local.tagName,"-");
+			}
+
 			// assume any element with mix of text and tags is html
 			// NOT IMPLEMENTED:also allow text attibute text=yes so you can wrap the whole thing in tags e.g. <p> or <div>
 			
+			local.val = "";
+
 			if (Trim(child.ownText()) neq "") {
-				retVal[child.tagName()] = child.html();
+				retVal[local.tagName] = child.html();
 			}
 
 			else if (testAtts OR testchildren) {
 				// if there are multiple tags with the same tag name, create an array
-				if (StructKeyExists(retVal,child.tagName())) {
-					if (NOT IsArray(retVal[child.tagName()])) {
-						local.tmpFirstVal = retVal[child.tagName()];
-						retVal[child.tagName()] = ArrayNew(1);
-						arrayAppend(retVal[child.tagName()], local.tmpFirstVal);
+				if (StructKeyExists(retVal,local.tagName)) {
+					if (NOT IsArray(retVal[local.tagName])) {
+						local.tmpFirstVal = retVal[local.tagName];
+						retVal[local.tagName] = ArrayNew(1);
+						arrayAppend(retVal[local.tagName], local.tmpFirstVal);
 					}
-					arrayAppend(retVal[child.tagName()], XMLNode2Struct(child));
+					arrayAppend(retVal[local.tagName], XMLNode2Struct(child));
 				}
 				else {
-					retVal[child.tagName()] = XMLNode2Struct(child);
+					retVal[local.tagName] = XMLNode2Struct(child);
 				}
 			}
 			else {
-			 	retVal[child.tagName()] = "";
+			 	retVal[local.tagName] = "";
 			}
 		}
 		
@@ -252,7 +288,7 @@ component {
 	/**
 	 * Create a node and return it
 	 */
-	public function createNode(required tagName, text) {
+	public function createNode(required tagName, text, id, classes) {
 
 		var tag = createObject('java','org.jsoup.parser.Tag').valueOf(arguments.tagName);
 		var node = createObject("java", "org.jsoup.nodes.Element").init(
@@ -261,6 +297,13 @@ component {
 		if (IsDefined("arguments.text")) {
 			node.html(arguments.text);
 		}
+		if (IsDefined("arguments.id")) {
+			node.attr("id", arguments.id);
+		}
+		if (IsDefined("arguments.classes")) {
+			node.attr("class", arguments.classes);
+		}
+		
 		return node;
 	}
 
