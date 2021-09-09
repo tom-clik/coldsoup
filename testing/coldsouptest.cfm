@@ -51,9 +51,11 @@ WriteDump(test);
 tag = coldSoup.createNode(tagName="h2",text="sub heading",id="myID",classes="big bold");
 displayCode(tag.outerHtml());
 
+textNode = coldSoup.createTextNode("My testing");
+displayCode(textNode.outerHtml());
 
 // test5
-ok = coldSoup.htmlIsValid(request.prc.dodgyHTML);
+ok = coldSoup.isValidHTML(request.prc.dodgyHTML);
 WriteOutput("Dodgy html is ok? " & yesNoFormat(ok));
 
 // test6

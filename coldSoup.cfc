@@ -26,37 +26,43 @@ component {
 	}
 
 	/**
-	 * DEPRECATED: mainly  becuase I'm not sure what it's for.
+	 * @hint HTML Escape format all given tags in a document
 	 *
-	 * you can pass in either an html string, or a parsed document, and will get the same type back
+	 * Gets the outer HTML of a tag and sets the text  of a new node to be that. This is essentially the same
+	 * as HTMLEditFormat. By using wrap="pre" it's the same as HTMLCodeFormat
+	 *
+	 * TBC: whether this is still worth doing or whether there was an issue with those functions that this resolved.
+	 *
+	 * The  replaceWhitespace option replaces `<br />` tags and `&nbsp;` with plain whitespace.
+	 * 
 	 */
-	public function HTMLEscapeTag(doc, tag, wrap="", boolean replaceWhitespace="1") output=false {
+	public function HTMLEscapeTag(required doc, required string tag, string wrap="", boolean replaceWhitespace="1") output=false {
 
 		// Parse doc if needed
 		if( IsSimpleValue(arguments.doc) ) {
-			local.doc = this.jsoup.jsoup.parse(arguments.doc);
+			local.doc = parse(arguments.doc);
 		} else {
 			local.doc = arguments.doc;
 		}
 
 		// select our tags
-		local.elements = arguments.doc.select("#arguments.tag#");
+		local.elements = local.doc.select("#arguments.tag#");
 
 		for( local.i = 1; local.i LTE ArrayLen(local.elements) ; local.i = local.i+1) {			
 			local.element = local.elements[local.i];
 
 			// prepare a blank textNode
-			local.newNode = this.jsoup.parseBodyFragment(' ').body().textNodes()[1];
+			local.newNode = createTextNode("");
 			// And set it's TEXT to the value of the elements html
-			local.tag = local.element.outerHTML();
+			local.outerHTML = local.element.outerHTML();
 			if( arguments.replaceWhiteSpace ) {
 				local.text = local.element.html();
 				if( local.text neq '' ) {
-					local.tag = replace(local.tag,'<br />',chr(13)&chr(10),'all');
-					local.tag = replace(local.tag,'&nbsp;',' ','all');
+					local.outerHTML = replace(local.outerHTML,'<br />',chr(13)&chr(10),'all');
+					local.outerHTML = replace(local.outerHTML,'&nbsp;',' ','all');
 				}
 			}
-			local.newNode.text(local.tag);
+			local.newNode.text(local.outerHTML);
 
 			// wrap the element if requested
 			if( arguments.wrap neq '')  {
@@ -131,7 +137,7 @@ component {
 	 * See if HTML is valid according to specified whitelist
 	 */
 	//  do not rename - can't use `IsValid` in older CF as is in-built function 
-	public boolean function htmlIsValid(required html, whitelist="basic") {
+	public boolean function isValidHTML(required html, whitelist="basic") {
 
 		local.whiteListObj = getWhitelist(arguments.whitelist);
 		return this.jsoup.isValid(arguments.html,local.whiteListObj);
@@ -229,7 +235,6 @@ component {
 			}
 
 			// assume any element with mix of text and tags is html
-			// NOT IMPLEMENTED:also allow text attibute text=yes so you can wrap the whole thing in tags e.g. <p> or <div>
 			
 			local.val = "";
 
@@ -286,14 +291,12 @@ component {
 	}
 
 	/**
-	 * Create a node and return it
+	 * Create a node
 	 */
 	public function createNode(required tagName, text, id, classes) {
 
-		var tag = createObject('java','org.jsoup.parser.Tag').valueOf(arguments.tagName);
 		var node = createObject("java", "org.jsoup.nodes.Element").init(
-				tag,
-				javacast('string', ''));
+				javacast('string', arguments.tagName));
 		if (IsDefined("arguments.text")) {
 			node.html(arguments.text);
 		}
@@ -303,6 +306,18 @@ component {
 		if (IsDefined("arguments.classes")) {
 			node.attr("class", arguments.classes);
 		}
+		
+		return node;
+	}
+
+	/**
+	 * Create a text node
+	 */
+	public function createTextNode(required string text) {
+
+		var node = createObject("java", "org.jsoup.nodes.TextNode").init(
+				javacast('string', arguments.text));
+		
 		
 		return node;
 	}
