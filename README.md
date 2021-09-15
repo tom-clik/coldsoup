@@ -31,7 +31,7 @@ doc = coldSoup.parse(htmlDocument);
 // return cleaned html
 html = coldSoup.clean(html="<script>bad code</script> text", whitelist="basic" );
 
-// create JSoup node without javing to JavaCast everything.
+// create JSoup node without having to JavaCast everything.
 node = coldSoup.createNode("h2","my heading");
 
 ```

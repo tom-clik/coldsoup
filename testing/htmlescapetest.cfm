@@ -2,8 +2,9 @@
 
 /* Test htmlEscape
 
-
 ## Usage
+
+Run as is.
 
 ## History
 
@@ -15,9 +16,7 @@
 
 setUpTests();
 
-// new style instantiation. Will call init()!.
 coldSoup = new coldSoup();
-
 
 doc = coldSoup.HTMLEscapeTag(doc=request.prc.dodgyHTML, tag="script,style,meta",wrap="pre");
 
