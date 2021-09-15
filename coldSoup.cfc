@@ -326,6 +326,14 @@ component {
 		return retVal;
 	}
 
+	public void function copyAttributes(required object source, required object destination) {
+		local.attributes = arguments.source.attributes().asList();
+
+		for (local.attribute in local.attributes) {
+			arguments.destination.attr(local.attribute.getKey(),local.attribute.getValue());
+		}
+	}
+
 	/**
 	 * Create a node
 	 * 
