@@ -20,7 +20,7 @@ application.coldsoup = new coldSoup();
 
 3. Return type from `parse()` is a [Jsoup Document](https://jsoup.org/apidocs/org/jsoup/nodes/Document.html).
 
-These can be searched with `select(selector)` where selector is a JQuery-like selector. The return value is sufficiently like a CF array to be used as one. Each element is a Jsoup Node](https://jsoup.org/apidocs/org/jsoup/nodes/Node.html).
+These can be searched with `select(selector)` where selector is a JQuery-like selector. The return value is sufficiently like a CF array to be used as one. Each element is a [Jsoup Node](https://jsoup.org/apidocs/org/jsoup/nodes/Node.html).
 
 ## Examples
 
