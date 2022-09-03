@@ -25,7 +25,7 @@ Either way you will need to ensure the setting for "search local" is set to
 setUpTests();
 
 // new style instantiation will call init().
-coldSoup = new coldSoup();
+coldSoup = new coldsoup.coldSoup();
 
 // Test 1.
 // Parse some bad HTML

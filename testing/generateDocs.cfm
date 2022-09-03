@@ -7,7 +7,8 @@ Generate documentation using [Docbox](https://github.com/Ortus-Solutions/DocBox)
 
 
 // output folder
-outputFolder = expandPath( '../docs' );
+outputPath = '../docs';
+outputFolder = expandPath(outputPath);
 
 if (! directoryExists(outputFolder)) {
 	try {
@@ -35,5 +36,7 @@ docbox.generate(
     source  = "#expandPath( '..' )#",
     mapping = "coldsoup"
 );
+
+location(outputPath & "/index.html",false);
 
 </cfscript>
