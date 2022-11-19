@@ -6,6 +6,6 @@ doc = coldSoup.parse(FileRead(ExpandPath("../testing/rubbish.html")));
 paras = doc.select("p");
 writeOutput("<p>" & paras.len() & " p tags found");
 for (para in paras) {
-	writeDump(coldSoup.tagInfo(para));
+	writeDump(coldSoup.nodeInfo(para));
 }
 </cfscript>

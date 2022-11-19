@@ -142,7 +142,7 @@ component {
 	public function getHTML(
 		required any      node, 
 		         boolean  pretty="1"
-	    ) {
+		) {
 
 		if (arguments.pretty) {
 			arguments.node.outputSettings(this.Pretty);
@@ -337,9 +337,8 @@ component {
 	/**
 	 * Parse an html fragment and return the created node
 	 * 
-	 * 
- 	 * @html        Single tag.
- 	 **/
+	 * @html        Single tag.
+	 **/
 	public function parseNode(required string html) {
 		local.document = this.jsoup.parseBodyFragment(arguments.html);
 		local.node = local.document.body().children().first();
@@ -349,11 +348,11 @@ component {
 	/**
 	 * Create a node
 	 * 
- 	 * @tagName       Tag name e.g. h2
- 	 * @text          Text for tag.
- 	 * @id            ID attribute for tag
- 	 * @classes       Class attribute for tag
- 	 **/
+	 * @tagName       Tag name e.g. h2
+	 * @text          Text for tag.
+	 * @id            ID attribute for tag
+	 * @classes       Class attribute for tag
+	 **/
 	public function createNode(
 		required string tagName, 
 		         string text, 
@@ -382,15 +381,16 @@ component {
 	 * Create a text node
 	 */
 	public function createTextNode(required string text) {
-
 		var node = createObject("java", "org.jsoup.nodes.TextNode").init(
 			javacast('string', arguments.text)
 		);
 		
-		
 		return node;
 	}
 
+	/**
+	 * Return java class name for node (Element|TextNode|Comment|DataNode)
+	 */
 	public string function nodeType(required node) {
 		local.type = "";
 		if (IsInstanceOf(arguments.node, "org.jsoup.nodes.Element")) {
@@ -408,21 +408,24 @@ component {
 		return local.type;
 	}
 
-	public struct function tagInfo(required node) {
+	/**
+	 * Get struct of info about a node.  Values depend on type.
+	 */
+	public struct function nodeInfo(required node) {
 		var info = {"type"=nodeType(arguments.node)};
 		switch (info.type) {
 			case "Element":
 				info["tagname"] = arguments.node.tagName();
 				info["html"] = arguments.node.html();
 				info["attributes"] = getAttributes(arguments.node);
-			break;
+				break;
 			case "TextNode":
 				info["text"] = arguments.node.text();	
-			break;
+				break;
 			case "Comment":
-			break;
+				break;
 			case "DataNode":
-			break;
+				break;
 
 		}
 
