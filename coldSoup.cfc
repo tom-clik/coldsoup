@@ -104,13 +104,13 @@ component {
 	}
 
 	/**
-	 * Parse HTML into a jsoup node
+	 * Parse HTML into a jsoup document
 	 */
 	public function parse(required html) {
 
-		local.node = this.jsoup.parse(arguments.html);
+		local.document = this.jsoup.parse(arguments.html);
 		
-		return local.node;
+		return local.document;
 	}
 
 	/**
@@ -335,6 +335,18 @@ component {
 	}
 
 	/**
+	 * Parse an html fragment and return the created node
+	 * 
+	 * 
+ 	 * @html        Single tag.
+ 	 **/
+	public function parseNode(required string html) {
+		local.document = this.jsoup.parseBodyFragment(arguments.html);
+		local.node = local.document.body().children().first();
+		return local.node;
+	}
+ 
+	/**
 	 * Create a node
 	 * 
  	 * @tagName       Tag name e.g. h2
@@ -377,6 +389,44 @@ component {
 		
 		
 		return node;
+	}
+
+	public string function nodeType(required node) {
+		local.type = "";
+		if (IsInstanceOf(arguments.node, "org.jsoup.nodes.Element")) {
+			local.type = "Element";	
+		}
+		else if (IsInstanceOf(arguments.node, "org.jsoup.nodes.TextNode")) {
+			local.type = "TextNode";	
+		} 
+		else if (IsInstanceOf(arguments.node, "org.jsoup.nodes.Comment")) {
+			local.type = "Comment";	
+		}
+		else if (IsInstanceOf(arguments.node, "org.jsoup.nodes.DataNode")) {
+			local.type = "DataNode";	
+		}
+		return local.type;
+	}
+
+	public struct function tagInfo(required node) {
+		var info = {"type"=nodeType(arguments.node)};
+		switch (info.type) {
+			case "Element":
+				info["tagname"] = arguments.node.tagName();
+				info["html"] = arguments.node.html();
+				info["attributes"] = getAttributes(arguments.node);
+			break;
+			case "TextNode":
+				info["text"] = arguments.node.text();	
+			break;
+			case "Comment":
+			break;
+			case "DataNode":
+			break;
+
+		}
+
+		return info;
 	}
 
 }

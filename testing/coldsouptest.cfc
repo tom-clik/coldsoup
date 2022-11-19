@@ -1,18 +1,10 @@
 <cfscript>
 
-/* Examples of using ColdSoup
+/* 
 
-Not a unit test package, just various methods showing usage.
 
 ## Usage
 
-Ensure JSoup is nin your server class path and the coldsoup component is in a component path.
-
-E.g. for Lucee either add the coldsoup folder to {lucee-web}/components/ 
-or add an additional resource in your component paths.
-
-Either way you will need to ensure the setting for "search local" is set to 
-"Search relative to the caller directory for the component"
 
 ## History
 
@@ -22,10 +14,52 @@ Either way you will need to ensure the setting for "search local" is set to
 
 */
 
-setUpTests();
+component extends="testbox.system.BaseSpec"{
+     function beforeTests(){
+     	variables.dodgyHTML = FileRead("dodgy.html");
+     	variables.rubbishHTML = FileRead("rubbish.html");
+	}
+     
+    function afterTests(){}
 
-// new style instantiation will call init().
-coldSoup = new coldsoup.coldSoup();
+    function setup( currentMethod ){}
+     
+    function teardown( currentMethod ){}
+
+    /**
+	* @test
+	*/
+	function createComponent(){
+		try {
+			local.coldSoup = new coldsoup.coldSoup();
+		}
+		catch (Any e) {
+				$assert.fail( "Failed to create coldSoup component");
+		}
+	}
+
+	/**
+	* @test
+	*/
+	function createComponent(){
+		try {
+			local.coldSoup = new coldsoup.coldSoup();
+			doc = coldSoup.parse(variables.rubbishHTML);
+		}
+		catch (Any e) {
+			$assert.fail( "Failed to parse document");
+		}
+
+		$assert.assert(doc.body().children().len() eq 2,"Children should be 2");
+		local.text = Trim(doc.body().children().first().html());
+		$assert.assert(local.text eq "This is a para","First paragraph wrong [#local.text#]");
+
+	}
+
+}
+
+
+/*
 
 // Test 1.
 // Parse some bad HTML
@@ -64,7 +98,6 @@ displayCode(okText);
 okHTML = coldSoup.clean(html=request.prc.dodgyHTML,whitelist="relaxed");
 displayCode(okHTML);
 
-
 // test7
 // Create our own safeList
 safeList = coldSoup.getWhitelist("none");
@@ -78,7 +111,6 @@ coldSoup.addWhiteList("test", safeList)
 okHTML = coldSoup.clean(html=request.prc.dodgyHTML,whitelist="test");
 displayCode(okHTML);
 
-
 // test 8.
 // Get attributes from tag. Note we treat data as a struct.
 tag = coldSoup.createNode(tagName="h2",text="sub heading",id="myID",classes="big bold");
@@ -86,14 +118,10 @@ tag.attr("title","tag has title");
 tag.attr("data-test","Data test");
 WriteDump(coldSoup.getAttributes(tag));
 
-
 function displayCode(html) {
 	WriteOutput("<pre>" & HtmlEditFormat(arguments.html) & "<pre>");
 }
 
-function setUpTests() {
-	request.prc = {};
-	request.prc.dodgyHTML = FileRead(ExpandPath("../testing/dodgy.html"));
-}
+*/
 
 </cfscript>
