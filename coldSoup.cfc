@@ -1,6 +1,12 @@
-/*  coldSoup.cfc
+/*  
 
-Wrapper for Jsoup 
+# coldSoup.cfc
+
+Wrapper for Jsoup
+
+Author: Tom Peer 
+
+See README.md
 
 */
 component {
@@ -10,7 +16,6 @@ component {
 	 */
 	public void function init() {
 
-				
 		this.jsoup             = createObject( "java", "org.jsoup.Jsoup" );
 		this.parser            = createObject( "java", "org.jsoup.parser.Parser" );
 		variables.whitelistObj = createObject( "java", "org.jsoup.safety.Whitelist" );
@@ -21,7 +26,7 @@ component {
 		this.notPretty         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false);
 		this.xml               = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
 		this.prettyXML         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(false).syntax(this.xmlSyntax);
-		
+
 	}
 
 	/**
@@ -40,10 +45,10 @@ component {
 	 * @replaceWhitespace  replaces `<br />` tags and `&nbsp;` with plain whitespace.
 	 */
 	public function HTMLEscapeTag(
-		required any 		doc, 
-		required string 	tag, 
-				 string 	wrap="", 
-				 boolean 	replaceWhitespace="1"
+		required any        doc, 
+		required string     tag, 
+		         string     wrap="", 
+		         boolean    replaceWhitespace="1"
 		) output=false {
 
 		// Parse doc if needed
@@ -119,6 +124,7 @@ component {
 	public function getXML(required node) {
 
 		arguments.node.outputSettings(this.xml);
+		
 		return node.html();
 	}
 
@@ -231,7 +237,7 @@ component {
 	 */
 	public function parseXML(
 		required string xml, 
-				 string baseurl="") {
+		         string baseurl="") {
 
 		local.xmlObj = this.jsoup.parse(arguments.xml,arguments.baseurl,this.XMLParser);
 		return local.xmlObj;
