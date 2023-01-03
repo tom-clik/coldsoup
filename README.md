@@ -11,16 +11,17 @@ Working with JSoup in CFML often requires JavaCasting variables and quite cumber
 Assumes Jsoup is installed in your server class path.
 
 1. Instantiate the component as a singleton in a shared scope, e.g. application
+	```cfml
+	application.coldsoup = new coldSoup();
+	```
 
-```cfml
-application.coldsoup = new coldSoup();
-```
-
-2. Call static methods as required.
+2. Call static methods as required, e.g.
+	```cfml
+	myDoc = application.coldsoup.parse(html);
+	```
 
 3. Return type from `parse()` is a [Jsoup Document](https://jsoup.org/apidocs/org/jsoup/nodes/Document.html).
-
-These can be searched with `select(selector)` where selector is a JQuery-like selector. The return value is sufficiently like a CF array to be used as one. Each element is a [Jsoup Node](https://jsoup.org/apidocs/org/jsoup/nodes/Node.html). Modern versions of Jsoup should return an empty array if none are found. If you get null values, upgrade.
+	These can be searched with `select(selector)` where selector is a JQuery-like selector, e.g. `p.class`. The return value is sufficiently like a CF array to be used as one. Each element is a [Jsoup Node](https://jsoup.org/apidocs/org/jsoup/nodes/Node.html). Modern versions of Jsoup should return an empty array if none are found. If you get null values, upgrade.
 
 ## Examples
 
