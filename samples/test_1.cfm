@@ -10,5 +10,4 @@ writeOutput("<pre>#htmlEditFormat(html)#</pre>");
 doc = coldSoup.parse(html);
 displayCode(coldsoup.getHTML(doc));
 
-
 </cfscript>

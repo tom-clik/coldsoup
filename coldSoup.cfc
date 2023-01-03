@@ -14,7 +14,7 @@ component {
 	/**
 	 * Pseudo constructor
 	 */
-	public void function init() {
+	public coldSoup function init() {
 
 		this.jsoup             = createObject( "java", "org.jsoup.Jsoup" );
 		this.parser            = createObject( "java", "org.jsoup.parser.Parser" );
@@ -27,70 +27,8 @@ component {
 		this.xml               = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
 		this.prettyXML         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(false).syntax(this.xmlSyntax);
 
-	}
+		return this;
 
-	/**
-	 * @hint HTML Escape format all given tags in a document
-	 *
-	 * Gets the outer HTML of a tag and sets the text  of a new node to be that. This is essentially the same
-	 * as HTMLEditFormat. By using wrap="pre" it's the same as HTMLCodeFormat
-	 *
-	 * TBC: whether this is still worth doing or whether there was an issue with those functions that's now resolved.
-	 *
-	 * The  replaceWhitespace option replaces `<br />` tags and `&nbsp;` with plain whitespace.
-	 *
-	 * @doc                jsoup document or a plain text string. Will return the same
-	 * @tag                tag or tag list to escape, e.g. "script,meta,style"
-	 * @wrap               tag to wrap around result e.g. "pre"
-	 * @replaceWhitespace  replaces `<br />` tags and `&nbsp;` with plain whitespace.
-	 */
-	public function HTMLEscapeTag(
-		required any        doc, 
-		required string     tag, 
-		         string     wrap="", 
-		         boolean    replaceWhitespace="1"
-		) output=false {
-
-		// Parse doc if needed
-		if( IsSimpleValue(arguments.doc) ) {
-			local.doc = parse(arguments.doc);
-		} else {
-			local.doc = Duplicate(arguments.doc);
-		}
-
-		// select our tags
-		local.elements = local.doc.select("#arguments.tag#");
-
-		for( local.i = 1; local.i <= ArrayLen(local.elements) ; local.i = local.i+1) {			
-			local.element = local.elements[local.i];
-
-			// prepare a blank textNode
-			local.newNode = createTextNode("");
-			// And set it's TEXT to the value of the elements html
-			local.outerHTML = local.element.outerHTML();
-			if( arguments.replaceWhiteSpace ) {
-				local.text = local.element.html();
-				if( local.text neq '' ) {
-					local.outerHTML = replace(local.outerHTML,'<br />',chr(13)&chr(10),'all');
-					local.outerHTML = replace(local.outerHTML,'&nbsp;',' ','all');
-				}
-			}
-			local.newNode.text(local.outerHTML);
-
-			// wrap the element if requested
-			if( arguments.wrap neq '')  {
-				local.element.wrap('<#arguments.wrap#></#arguments.wrap#>');
-			}
-			// replace the original HTML node with the text node
-			local.element.replaceWith(local.newNode);
-		}
-
-		// Return string if we passed in a string, and document if we passed in a document
-		if( isSimpleValue(arguments.doc) ) {
-			return local.doc.html();
-		} else {
-			return local.doc;
-		}
 	}
 
 	/**
@@ -111,7 +49,7 @@ component {
 	/**
 	 * Parse HTML into a jsoup document
 	 */
-	public function parse(required html) {
+	public object function parse(required html) {
 
 		local.document = this.jsoup.parse(arguments.html);
 		
@@ -121,7 +59,7 @@ component {
 	/**
 	 * Set syntax to XML and get html
 	 */
-	public function getXML(required node) {
+	public string function getXML(required node) {
 
 		arguments.node.outputSettings(this.xml);
 		
@@ -131,7 +69,7 @@ component {
 	/**
 	 * Return pretty printed XML
 	 */
-	public function getPrettyXML(required node) {
+	public string function getPrettyXML(required node) {
 
 		arguments.node.outputSettings(this.prettyXML);
 
@@ -145,7 +83,7 @@ component {
 	 * will use that.
 	 * 
 	 */
-	public function getHTML(
+	public string function getHTML(
 		required any      node, 
 		         boolean  pretty="1"
 		) {
@@ -246,7 +184,7 @@ component {
 	/**
 	 * Take an XML node and combine all its attributes and sub tags into a single struct. If the sub tags have children or attributes it recurses
 	 */
-	public function XMLNode2Struct(required xmlNode) {
+	public struct function XMLNode2Struct(required xmlNode) {
 
 		var retVal        = getAttributes(arguments.xmlNode);
 		var testAtts      = false;
@@ -306,7 +244,7 @@ component {
 	 * Data attributes will be returned as keys of a struct "data"
 	 * 
 	 */
-	public Struct function getAttributes(required object xmlNode) {
+	public struct function getAttributes(required object xmlNode) {
 
 		if (! IsInstanceOf(arguments.xmlNode, "org.jsoup.nodes.Element")) {
 			throw("Invalid xmlNode");
@@ -345,7 +283,7 @@ component {
 	 * 
 	 * @html        Single tag.
 	 **/
-	public function parseNode(required string html) {
+	public org.jsoup.nodes.Element function parseNode(required string html) {
 		local.document = this.jsoup.parseBodyFragment(arguments.html);
 		local.node = local.document.body().children().first();
 		return local.node;
@@ -358,8 +296,9 @@ component {
 	 * @text          Text for tag.
 	 * @id            ID attribute for tag
 	 * @classes       Class attribute for tag
+	 *
 	 **/
-	public function createNode(
+	public object function createNode(
 		required string tagName, 
 		         string text, 
 		         string id, 
@@ -379,14 +318,14 @@ component {
 		if (IsDefined("arguments.classes")) {
 			node.attr("class", arguments.classes);
 		}
-		
+
 		return node;
 	}
 
 	/**
 	 * Create a text node
 	 */
-	public function createTextNode(required string text) {
+	public object function createTextNode(required string text) {
 		var node = createObject("java", "org.jsoup.nodes.TextNode").init(
 			javacast('string', arguments.text)
 		);

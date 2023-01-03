@@ -1,7 +1,5 @@
 component {
-
-
-	// ensure we only preview via index page
+	
 	public void function onRequestStart(targetPage) {
 
 		request.prc = {};
@@ -9,20 +7,22 @@ component {
 		request.prc.coldsoup = new coldsoup.coldSoup();
 
 		local.script = ListLast(arguments.targetPage,"/");
+		
+		// ensure we only preview via index page
 		if (local.script neq "index.cfm") {
+			
 			if (Left(local.script ,4) eq "test") {
+
 				local.testID = ListLast(ListFirst(arguments.targetPage,"."),"_");
+
 				if (isValid("integer",local.testID )) {
 					cflocation( url="index.cfm?test=" & local.testID, addtoken="false" );
 				}
-				else {
-					cflocation( url="index.cfm", addtoken="false" );
-				}
+				
 			}
-			else {
-				writeDump(local.script);
-				abort;
-			}
+
+			cflocation( url="index.cfm", addtoken="false" );
+			
 		}
 		
 

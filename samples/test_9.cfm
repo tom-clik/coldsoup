@@ -4,7 +4,7 @@
 
 doc = coldSoup.parse(FileRead(ExpandPath("../testing/rubbish.html")));
 paras = doc.select("p");
-writeOutput("<p>" & paras.len() & " p tags found");
+writeOutput("<p>" & paras.len() & " p tags found</p>");
 for (para in paras) {
 	writeDump(coldSoup.nodeInfo(para));
 }
