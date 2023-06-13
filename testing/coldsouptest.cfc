@@ -1,5 +1,3 @@
-<cfscript>
-
 /* 
 
 textBox suite for ColdSoup
@@ -92,5 +90,3 @@ component extends="testbox.system.BaseSpec"{
 
 
 }
-
-</cfscript>

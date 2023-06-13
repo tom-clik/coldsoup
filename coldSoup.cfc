@@ -283,7 +283,7 @@ component {
 	 * 
 	 * @html        Single tag.
 	 **/
-	public org.jsoup.nodes.Element function parseNode(required string html) {
+	public any function parseNode(required string html) {
 		local.document = this.jsoup.parseBodyFragment(arguments.html);
 		local.node = local.document.body().children().first();
 		return local.node;

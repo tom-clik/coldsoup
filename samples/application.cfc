@@ -28,9 +28,4 @@ component {
 
 	}
 
-	function displayCode(html) {
-		WriteOutput("<pre>" & HtmlEditFormat(arguments.html) & "<pre>");
-	}
-
-
 }
