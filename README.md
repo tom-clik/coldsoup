@@ -21,6 +21,7 @@ Assumes Jsoup is installed in your server class path.
 	```
 
 3. Return type from `parse()` is a [Jsoup Document](https://jsoup.org/apidocs/org/jsoup/nodes/Document.html).
+
 	These can be searched with `select(selector)` where selector is a JQuery-like selector, e.g. `p.class`. The return value is sufficiently like a CF array to be used as one. Each element is a [Jsoup Node](https://jsoup.org/apidocs/org/jsoup/nodes/Node.html). Modern versions of Jsoup should return an empty array if none are found. If you get null values, upgrade.
 
 ## Examples
