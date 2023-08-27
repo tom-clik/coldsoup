@@ -84,7 +84,7 @@ component {
 	 * 
 	 */
 	public string function getHTML(
-		required any      node, 
+		required object   node, 
 		         boolean  pretty="1"
 		) {
 
@@ -157,13 +157,12 @@ component {
 				local.whiteListObj = variables.whitelistObj.basicWithImages();
 				break;			
 			default:
-			
-			if (structKeyExists(variables.whitelists,arguments.whitelist)) {
-				local.whiteListObj = variables.whitelists[arguments.whitelist];
-			}
-			else {
-				throw("Whitelist #arguments.whitelist# not defined");
-			}
+				if (structKeyExists(variables.whitelists,arguments.whitelist)) {
+					local.whiteListObj = variables.whitelists[arguments.whitelist];
+				}
+				else {
+					throw("Whitelist #arguments.whitelist# not defined");
+				}
 
 		}
 
@@ -175,7 +174,7 @@ component {
 	 */
 	public function parseXML(
 		required string xml, 
-		         string baseurl="") {
+				 string baseurl="") {
 
 		local.xmlObj = this.jsoup.parse(arguments.xml,arguments.baseurl,this.XMLParser);
 		return local.xmlObj;
@@ -209,9 +208,6 @@ component {
 			}
 
 			// assume any element with mix of text and tags is html
-			
-			local.val = "";
-
 			if (Trim(child.ownText()) neq "") {
 				retVal[local.tagName] = child.html();
 			}
@@ -283,7 +279,7 @@ component {
 	 * 
 	 * @html        Single tag.
 	 **/
-	public any function parseNode(required string html) {
+	public object function parseNode(required string html) {
 		local.document = this.jsoup.parseBodyFragment(arguments.html);
 		local.node = local.document.body().children().first();
 		return local.node;
