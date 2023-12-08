@@ -16,16 +16,24 @@ component {
 	 */
 	public coldSoup function init() {
 
+		// expose the parsers as public objects
 		this.jsoup             = createObject( "java", "org.jsoup.Jsoup" );
 		this.parser            = createObject( "java", "org.jsoup.parser.Parser" );
+		this.XMLParser         = this.parser.XMLParser();
+
+		// use addWhiteList and getWhiteList to use whitelists
 		variables.whitelistObj = createObject( "java", "org.jsoup.safety.Whitelist" );
 		variables.whiteLists   = {};
-		this.XMLParser         = this.parser.XMLParser();
+		
+		// This really ought to be private
 		this.xmlSyntax         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings$Syntax").xml;
-		this.Pretty            = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").outline(true);
+
+		// output formats. You can use a document's outputSettings() with these objects
+		// or call outputSettings(doc, "name") in this component
+		this.Pretty            = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(true);
 		this.notPretty         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false);
 		this.xml               = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
-		this.prettyXML         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(false).syntax(this.xmlSyntax);
+		this.prettyXML         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(true).syntax(this.xmlSyntax);
 
 		return this;
 
@@ -67,13 +75,39 @@ component {
 	}
 
 	/**
-	 * Return pretty printed XML
+	 * Return pretty printed XML -- use outputSettings in preference
+	 *
+	 * @deprecated NB This changes the outputSettings of the supplied node. 
+	 *
 	 */
 	public string function getPrettyXML(required node) {
 
 		arguments.node.outputSettings(this.prettyXML);
 
 		return arguments.node.html();
+	}
+
+	/**
+	 * Set outputsettings for a document using keyword
+	 * @settings      Pretty|notPretty|xml|prettyXML
+	 */
+	public void function outputSettings(required node, required string settings) {
+
+		switch (arguments.settings) {
+			case "Pretty":
+			case "notPretty":
+			case "xml":
+			case "prettyXML":
+				arguments.node.outputSettings(this[arguments.settings]);
+				break;
+			default:
+				throw(
+					message="Output settings #arguments.settings# not defined",
+					detail="To use your own output settings, use the document's own outputSettings() method"
+				);
+
+		}
+
 	}
 
 	/**
