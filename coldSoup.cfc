@@ -373,4 +373,58 @@ component {
 		return info;
 	}
 
+	/**
+	 * @hint Remove superfluous anchor tags from headings
+	 * 
+	 * When using Markdown converters often we end up with
+	 * anchor points like
+	 *
+	 * ```html
+	 * <h2><a id='id' href='#id'>heading</a>
+	 * ```
+	 * These are uneccessary in modern HTML and can break 
+	 * functionality that uses the IDs on the heading tags
+	 * 
+	 * Use this to "unwrap" them while keeping the ID. 
+	 */
+	public void function unwrapHeaders(required node) {
+
+		local.headers = arguments.node.select("h1,h2,h3,h4,h5,h6");
+		
+		for (local.header in local.headers) {
+			
+			// NB this gets overridden in flexmark if auto headers is on. See next
+			local.id = local.header.id();
+			
+			// generate id from header text NB flexmark places the id and other attributes in to the <a> child tag
+			local.anchor = local.header.select("a");
+			if ( ArrayLen( local.anchor ) ) {
+				local.tag = local.anchor.first();
+
+				local.id = local.tag.id();
+				local.href = local.anchor.attr("href");
+				if (IsDefined("local.href")) {
+					local.target = ListLast(local.href,"##");
+				}
+				
+				// flexmark always adds href to anchors. If it links to itself it's an anchor not a link.
+				if (local.id == local.target) {
+					local.tag.removeAttr("href");
+					// There is also a bug in Flexmark which removes ids if you're not using anchorlinks.
+					// Therefore the only way to get the ids is to use anchor links and assign the id to the parent element
+					copyAttributes(local.tag,local.header);
+					local.tag.unwrap();
+				}
+			}
+
+			// if there was no ID on header or on anchor, create one
+			if (NOT (IsDefined("local.id") AND local.id neq "")) {
+				local.id = LCase(ReReplace(Replace(local.header.text()," ","-","all"), "[^\w\-]", "", "all"));
+				local.header.attr("id",local.id);
+			}
+			
+		}
+
+	}
+
 }
