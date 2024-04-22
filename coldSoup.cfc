@@ -21,8 +21,8 @@ component {
 		this.parser            = createObject( "java", "org.jsoup.parser.Parser" );
 		this.XMLParser         = this.parser.XMLParser();
 
-		// use addWhiteList and getWhiteList to use whitelists
-		variables.whitelistObj = createObject( "java", "org.jsoup.safety.Whitelist" );
+		// use addSafelist and getSafelist to use safelists
+		variables.safelistObj = createObject( "java", "org.jsoup.safety.Safelist" );
 		variables.whiteLists   = {};
 		
 		// This really ought to be private
@@ -40,15 +40,15 @@ component {
 	}
 
 	/**
-	 * Sanitize HTML by calling jsoup.clean() with specified whitelist
+	 * Sanitize HTML by calling jsoup.clean() with specified safelist
 	 *
 	 * @html         HTML string to clean
-	 * @whitelist    Name of whitelist -- either one of the standards (see getWhiteList() or the name of a custom white list (see addWhiteList()))
+	 * @safelist    Name of safelist -- either one of the standards (see getSafelist() or the name of a custom white list (see addSafelist()))
 	 * 
 	 */
-	public string function clean(required string html, whitelist="basic") {
+	public string function clean(required string html, safelist="basic") {
 
-		local.whiteListObj = getWhitelist(arguments.whitelist);
+		local.whiteListObj = getSafelist(arguments.safelist);
 		local.rethtml      = this.jsoup.clean(arguments.html,local.whiteListObj);
 		
 		return local.rethtml;
@@ -132,70 +132,70 @@ component {
 	}
 	
 	/**
-	 * See if HTML is valid according to specified whitelist
+	 * See if HTML is valid according to specified safelist
 	 */
 	public boolean function isValidHTML(
 		required string    html, 
-		         string    whitelist="basic"
+		         string    safelist="basic"
 		) {
 
-		local.whiteListObj = getWhitelist(arguments.whitelist);
+		local.whiteListObj = getSafelist(arguments.safelist);
 		return this.jsoup.isValid(arguments.html,local.whiteListObj);
 	}
 	
 	/**
-	 * @hint Add custom whitelist to reference by name 
+	 * @hint Add custom safelist to reference by name 
 	 *
-	 * To create your own whitelist, get one of the standard ones and modify it
+	 * To create your own safelist, get one of the standard ones and modify it
 	 * with available methods
 	 *
 	 * https://jsoup.org/apidocs/org/jsoup/safety/Safelist.html
 	 * 
 	 * @name  name to use when cleaning/checking validity
-	 * @whitelist jsoup safelist object
+	 * @safelist jsoup safelist object
 	 */
-	public void function addWhiteList(
+	public void function addSafelist(
 		required string  name, 
-		required object  whitelist) {
+		required object  safelist) {
 		
-		if (! IsInstanceOf( obj=arguments.whitelist, type="org.jsoup.safety.Whitelist" )) {
+		if (! IsInstanceOf( obj=arguments.safelist, type="org.jsoup.safety.Safelist" )) {
 			throw("Invald white list object");
 		}
 
-		variables.whiteLists["#arguments.name#"] = arguments.whitelist;	
+		variables.whiteLists["#arguments.name#"] = arguments.safelist;	
 
 	}
 
 	/**
-	 * @hint Return whitelist from keyword e.g. basic for basic()
+	 * @hint Return safelist from keyword e.g. basic for basic()
 	 * 
-	 * @whitelist   none|basic|simpleText|relaxed|basicWithImages
+	 * @safelist   none|basic|simpleText|relaxed|basicWithImages
 	 * 
 	 **/
-	public object function getWhitelist(required string whitelist) {
+	public object function getSafelist(required string safelist) {
 
-		switch(arguments.whitelist) {
+		switch(arguments.safelist) {
 			case "none":
-				local.whiteListObj = variables.whitelistObj.none();
+				local.whiteListObj = variables.safelistObj.none();
 				break;
 			case "basic":
-				local.whiteListObj = variables.whitelistObj.basic();
+				local.whiteListObj = variables.safelistObj.basic();
 				break;
 			case "simpleText":
-				local.whiteListObj = variables.whitelistObj.simpleText();
+				local.whiteListObj = variables.safelistObj.simpleText();
 				break;
 			case "relaxed":
-				local.whiteListObj = variables.whitelistObj.relaxed();
+				local.whiteListObj = variables.safelistObj.relaxed();
 				break;
 			case "basicWithImages":
-				local.whiteListObj = variables.whitelistObj.basicWithImages();
+				local.whiteListObj = variables.safelistObj.basicWithImages();
 				break;			
 			default:
-				if (structKeyExists(variables.whitelists,arguments.whitelist)) {
-					local.whiteListObj = variables.whitelists[arguments.whitelist];
+				if (structKeyExists(variables.safelists,arguments.safelist)) {
+					local.whiteListObj = variables.safelists[arguments.safelist];
 				}
 				else {
-					throw("Whitelist #arguments.whitelist# not defined");
+					throw("Safelist #arguments.safelist# not defined");
 				}
 
 		}
