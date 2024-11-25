@@ -40,7 +40,7 @@ function displayCode(html) {
 
 function setUpTests() {
 	request.prc = {};
-	request.prc.dodgyHTML = FileRead(ExpandPath("../testing/dodgy.html"));
+	request.prc.dodgyHTML = FileRead(ExpandPath("../testing/dodgy.html"),"utf-8");
 }
 
 function displayMenu() {

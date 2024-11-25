@@ -1,0 +1,2 @@
+Main-Class: testClass
+Class-Path: c:/dev/java/jsoup-1.18.1.jar

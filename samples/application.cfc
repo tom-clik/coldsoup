@@ -4,6 +4,8 @@ component {
 
 		request.prc = {};
 		request.rc = Duplicate(url);
+		structAppend(request.rc, form);
+		
 		request.prc.coldsoup = new coldsoup.coldSoup();
 
 		local.script = ListLast(arguments.targetPage,"/");

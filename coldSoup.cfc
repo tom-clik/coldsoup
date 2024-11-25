@@ -23,7 +23,7 @@ component {
 
 		// use addSafelist and getSafelist to use safelists
 		variables.safelistObj = createObject( "java", "org.jsoup.safety.Safelist" );
-		variables.whiteLists   = {};
+		variables.safeLists   = {};
 		
 		// This really ought to be private
 		this.xmlSyntax         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings$Syntax").xml;
@@ -43,13 +43,21 @@ component {
 	 * Sanitize HTML by calling jsoup.clean() with specified safelist
 	 *
 	 * @html         HTML string to clean
-	 * @safelist    Name of safelist -- either one of the standards (see getSafelist() or the name of a custom white list (see addSafelist()))
+	 * @safelist    Name of safelist -- either one of the standards (see getSafelist() or the name of a custom safe list (see addSafelist()))
 	 * 
 	 */
 	public string function clean(required string html, safelist="basic") {
 
-		local.whiteListObj = getSafelist(arguments.safelist);
-		local.rethtml      = this.jsoup.clean(arguments.html,local.whiteListObj);
+		local.safeListObj = getSafelist(arguments.safelist);
+		local.safeListObj = variables.safeListObj.basic();
+		writeDump(local.safeListObj);
+		local.jstring = Javacast('string', arguments.html);
+		writeDump(local.jstring);
+
+
+
+		writeDump(this.jsoup.isValid(local.jstring,local.safeListObj))
+		local.rethtml      = this.jsoup.clean( local.jstring ,local.safeListObj);
 		
 		return local.rethtml;
 	}
@@ -113,6 +121,8 @@ component {
 	/**
 	 * @hint Wrapper for Node.html() method with boolean for pretty printing
 	 *
+	 * @deprecated use outputSettings()
+	 *
 	 * NB sets the output settings for the node to pretty so subsequent calls to html()
 	 * will use that.
 	 * 
@@ -139,8 +149,8 @@ component {
 		         string    safelist="basic"
 		) {
 
-		local.whiteListObj = getSafelist(arguments.safelist);
-		return this.jsoup.isValid(arguments.html,local.whiteListObj);
+		local.safeListObj = getSafelist(arguments.safelist);
+		return this.jsoup.isValid(arguments.html,local.safeListObj);
 	}
 	
 	/**
@@ -159,10 +169,10 @@ component {
 		required object  safelist) {
 		
 		if (! IsInstanceOf( obj=arguments.safelist, type="org.jsoup.safety.Safelist" )) {
-			throw("Invald white list object");
+			throw("Invald safe list object");
 		}
 
-		variables.whiteLists["#arguments.name#"] = arguments.safelist;	
+		variables.safeLists["#arguments.name#"] = arguments.safelist;	
 
 	}
 
@@ -176,23 +186,23 @@ component {
 
 		switch(arguments.safelist) {
 			case "none":
-				local.whiteListObj = variables.safelistObj.none();
+				local.safeListObj = variables.safelistObj.none();
 				break;
 			case "basic":
-				local.whiteListObj = variables.safelistObj.basic();
+				local.safeListObj = variables.safelistObj.basic();
 				break;
 			case "simpleText":
-				local.whiteListObj = variables.safelistObj.simpleText();
+				local.safeListObj = variables.safelistObj.simpleText();
 				break;
 			case "relaxed":
-				local.whiteListObj = variables.safelistObj.relaxed();
+				local.safeListObj = variables.safelistObj.relaxed();
 				break;
 			case "basicWithImages":
-				local.whiteListObj = variables.safelistObj.basicWithImages();
+				local.safeListObj = variables.safelistObj.basicWithImages();
 				break;			
 			default:
 				if (structKeyExists(variables.safelists,arguments.safelist)) {
-					local.whiteListObj = variables.safelists[arguments.safelist];
+					local.safeListObj = variables.safelists[arguments.safelist];
 				}
 				else {
 					throw("Safelist #arguments.safelist# not defined");
@@ -200,7 +210,7 @@ component {
 
 		}
 
-		return local.whiteListObj;
+		return local.safeListObj;
 	}
 
 	/**
@@ -286,15 +296,16 @@ component {
 
 		for (local.attribute in local.attributes) {
 			local.key = local.attribute.getKey();
+			local.val = local.attribute.getValue() ? : true;
 			if (Left(local.key,5) == "data-") {
 				if (!StructKeyExists(retVal,"data")) {
 					retVal["data"] = {};
 				}
 				local.key = ListRest(local.key,"-");
-				retVal["data"][local.key] = local.attribute.getValue();
+				retVal["data"][local.key] = local.val;
 			}
 			else {
-				retVal[local.key] = local.attribute.getValue();
+				retVal[local.key] = local.val;
 			}
 	 	}
 		return retVal;
