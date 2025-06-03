@@ -1,1 +1,1 @@
-java -cp .;c:/dev/java/jsoup-1.18.1.jar testClass
+java -cp .;c:/dev/java/jsoup-1.20.1.jar testClass

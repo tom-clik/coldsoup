@@ -50,7 +50,6 @@ component {
 
 		local.safeListObj = getSafelist(arguments.safelist);
 		local.safeListObj = variables.safeListObj.basic();
-		writeDump(local.safeListObj);
 		local.jstring = Javacast('string', arguments.html);
 		writeDump(local.jstring);
 
