@@ -119,7 +119,7 @@ component {
 	 */
 	public string function getHTML(
 		required object   node, 
-		         boolean  pretty="1"
+				 boolean  pretty="1"
 		) {
 
 		if (arguments.pretty) {
@@ -136,7 +136,7 @@ component {
 	 */
 	public boolean function isValidHTML(
 		required string    html, 
-		         string    safelist="basic"
+				 string    safelist="basic"
 		) {
 
 		local.whiteListObj = getSafelist(arguments.safelist);
@@ -217,51 +217,62 @@ component {
 	/**
 	 * Take an XML node and combine all its attributes and sub tags into a single struct. If the sub tags have children or attributes it recurses
 	 */
-	public struct function XMLNode2Struct(required xmlNode) {
+	public struct function XMLNode2Struct(required xmlNode) localmode=true {
 
-		var retVal        = getAttributes(arguments.xmlNode);
-		var testAtts      = false;
-		var testchildren  = false;
-		var child         = false;
+		retVal        = getAttributes(arguments.xmlNode);
 			
 		// simple single text node is added as content field.
-		if (Trim(xmlNode.ownText()) neq "") {
-			retVal["content"] = xmlNode.ownText();
+		if (Trim(arguments.xmlNode.ownText()) neq "") {
+			childNodes = arguments.xmlNode.childNodes();
+			if (childNodes.size() == 1 && IsInstanceOf(childNodes.get(0), "org.jsoup.nodes.TextNode")) {
+				// retVal["content"] =arguments.xmlNode.ownText());
+				retVal["content"] =  trim(reReplace( childNodes.get(0).getWholeText(),"([\n\r])\t+","\1","all"));
+			}
+			else {
+				retVal["content"] = trim(arguments.xmlNode.ownText());
+			}
 		}
+		
 
 		for (child in arguments.xmlNode.children()) {
 			testAtts = child.attributes().size();
 			testchildren = child.children().size();
 
-
-			local.tagName = child.tagName();
+			tagName = child.tagName();
 			// issues with jsoup not allowing eg. image or caption. Prefix anything with field- to get around this,
-			local.isFix = (ListFirst(local.tagName,"-") eq "field");
-			if (local.isFix) {
-				local.tagName = ListRest(local.tagName,"-");
+			isFix = (ListFirst(tagName,"-") eq "field");
+			if (isFix) {
+				tagName = ListRest(tagName,"-");
 			}
 
 			// assume any element with mix of text and tags is html
 			if (Trim(child.ownText()) neq "") {
-				retVal[local.tagName] = child.html();
+				childNodes = child.childNodes();
+				if (childNodes.size() == 1 && IsInstanceOf(childNodes.get(0), "org.jsoup.nodes.TextNode")) {
+					retVal[tagName] = Trim(reReplace( childNodes.get(0).getWholeText(),"([\n\r])\t+","\1","all"));
+
+				}
+				else {
+					retVal[tagName] = child.html();
+				}
 			}
 
 			else if (testAtts OR testchildren) {
 				// if there are multiple tags with the same tag name, create an array
-				if (StructKeyExists(retVal,local.tagName)) {
-					if (NOT IsArray(retVal[local.tagName])) {
-						local.tmpFirstVal = retVal[local.tagName];
-						retVal[local.tagName] = ArrayNew(1);
-						arrayAppend(retVal[local.tagName], local.tmpFirstVal);
+				if (StructKeyExists(retVal,tagName)) {
+					if (NOT IsArray(retVal[tagName])) {
+						tmpFirstVal = retVal[tagName];
+						retVal[tagName] = ArrayNew(1);
+						arrayAppend(retVal[tagName], tmpFirstVal);
 					}
-					arrayAppend(retVal[local.tagName], XMLNode2Struct(child));
+					arrayAppend(retVal[tagName], XMLNode2Struct(child));
 				}
 				else {
-					retVal[local.tagName] = XMLNode2Struct(child);
+					retVal[tagName] = XMLNode2Struct(child);
 				}
 			}
 			else {
-			 	retVal[local.tagName] = "";
+				retVal[tagName] = "";
 			}
 		}
 		
@@ -296,7 +307,7 @@ component {
 			else {
 				retVal[local.key] = local.attribute.getValue();
 			}
-	 	}
+		}
 		return retVal;
 	}
 
@@ -330,9 +341,9 @@ component {
 	 **/
 	public object function createNode(
 		required string tagName, 
-		         string text, 
-		         string id, 
-		         string classes
+				 string text, 
+				 string id, 
+				 string classes
 		) {
 
 		var node = createObject("java", "org.jsoup.nodes.Element").init(
@@ -460,5 +471,37 @@ component {
 		}
 
 	}
+
+	/**
+	 * @hint Remove comments from HTML
+	 *
+	 * Warning! This is an extremely inefficient method of doing this. Do not call on big documents
+	 * The official solution to this is to use a node visitor, but I haven't cracked doing that in CFML
+	 *
+	 * I might write a Java class to do a generic pattern match or something.
+	 */
+	public void function removeComments(required document) localmode=true {
+
+		// as we are removing child nodes while iterating, we cannot use a normal foreach over children,
+		// or will get a concurrent list modification error.
+		i = 0;
+		while ( i < arguments.document.childNodes().size() ) {
+			child = arguments.document.childNode(i);
+			if (child.nodeName().equals("##comment"))
+				child.remove();
+			else {
+				removeComments(child);
+				i++;
+			}
+		}
+
+		// This throw null pointer exception in Lucee context. The class runs ok in a purely
+		// Java context.
+		// nodeVisitor = createObject("java", "org.coldsoup.RemoveCommentsVisitor");
+		// arguments.document.traverse(nodeVisitor);
+
+	}
+
+	
 
 }

@@ -9,4 +9,8 @@ test = coldSoup.XMLNode2Struct(doc.select("viewport").first());
 
 WriteDump(test);
 
+
+markdown = new markdown.flexmark(attributes=1);
+writeOutput("<pre>#test.testing#</pre>");
+writeOutput(markdown.toHtml(test.testing));
 </cfscript>
