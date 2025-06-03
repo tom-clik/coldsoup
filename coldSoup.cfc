@@ -14,26 +14,32 @@ component {
 	/**
 	 * Pseudo constructor
 	 */
-	public coldSoup function init() {
+	public coldSoup function init(required string jarpath) {
+
+		// Install the bundle through OSGI mechanism to avoid conflicts
+		local.CFMLEngine = createObject( "java", "lucee.loader.engine.CFMLEngineFactory" ).getInstance();
+		local.OSGiUtil = createObject( "java", "lucee.runtime.osgi.OSGiUtil" );
+		local.resource = CFMLEngine.getResourceUtil().toResourceExisting( getPageContext(), jarpath );
+		local.bundle = OSGiUtil.installBundle( CFMLEngine.getBundleContext(), local.resource, true);
 
 		// expose the parsers as public objects
-		this.jsoup             = createObject( "java", "org.jsoup.Jsoup" );
-		this.parser            = createObject( "java", "org.jsoup.parser.Parser" );
+		this.jsoup             = createObject( "java", "org.jsoup.Jsoup", "org.jsoup");
+		this.parser            = createObject( "java", "org.jsoup.parser.Parser", "org.jsoup" );
 		this.XMLParser         = this.parser.XMLParser();
 
 		// use addSafelist and getSafelist to use safelists
-		variables.safelistObj = createObject( "java", "org.jsoup.safety.Safelist" );
-		variables.whiteLists   = {};
+		variables.safelistObj = createObject( "java", "org.jsoup.safety.Safelist", "org.jsoup" );
+		variables.safeLists   = {};
 		
 		// This really ought to be private
-		this.xmlSyntax         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings$Syntax").xml;
+		this.xmlSyntax         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings$Syntax", "org.jsoup").xml;
 
 		// output formats. You can use a document's outputSettings() with these objects
 		// or call outputSettings(doc, "name") in this component
-		this.Pretty            = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(true);
-		this.notPretty         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false);
-		this.xml               = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
-		this.prettyXML         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(true).syntax(this.xmlSyntax);
+		this.Pretty            = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(true).outline(true);
+		this.notPretty         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(false).outline(false);
+		this.xml               = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
+		this.prettyXML         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(true).outline(true).syntax(this.xmlSyntax);
 
 		return this;
 
@@ -43,13 +49,13 @@ component {
 	 * Sanitize HTML by calling jsoup.clean() with specified safelist
 	 *
 	 * @html         HTML string to clean
-	 * @safelist    Name of safelist -- either one of the standards (see getSafelist() or the name of a custom white list (see addSafelist()))
+	 * @safelist    Name of safelist -- either one of the standards (see getSafelist() or the name of a custom safe list (see addSafelist()))
 	 * 
 	 */
 	public string function clean(required string html, safelist="basic") {
 
-		local.whiteListObj = getSafelist(arguments.safelist);
-		local.rethtml      = this.jsoup.clean(arguments.html,local.whiteListObj);
+		local.safeListObj = getSafelist(arguments.safelist);
+		local.rethtml      = this.jsoup.clean( arguments.html ,local.safeListObj);
 		
 		return local.rethtml;
 	}
@@ -113,6 +119,8 @@ component {
 	/**
 	 * @hint Wrapper for Node.html() method with boolean for pretty printing
 	 *
+	 * @deprecated use outputSettings()
+	 *
 	 * NB sets the output settings for the node to pretty so subsequent calls to html()
 	 * will use that.
 	 * 
@@ -139,8 +147,8 @@ component {
 				 string    safelist="basic"
 		) {
 
-		local.whiteListObj = getSafelist(arguments.safelist);
-		return this.jsoup.isValid(arguments.html,local.whiteListObj);
+		local.safeListObj = getSafelist(arguments.safelist);
+		return this.jsoup.isValid(arguments.html,local.safeListObj);
 	}
 	
 	/**
@@ -159,10 +167,10 @@ component {
 		required object  safelist) {
 		
 		if (! IsInstanceOf( obj=arguments.safelist, type="org.jsoup.safety.Safelist" )) {
-			throw("Invald white list object");
+			throw("Invald safe list object");
 		}
 
-		variables.whiteLists["#arguments.name#"] = arguments.safelist;	
+		variables.safeLists["#arguments.name#"] = arguments.safelist;	
 
 	}
 
@@ -176,23 +184,23 @@ component {
 
 		switch(arguments.safelist) {
 			case "none":
-				local.whiteListObj = variables.safelistObj.none();
+				local.safeListObj = variables.safelistObj.none();
 				break;
 			case "basic":
-				local.whiteListObj = variables.safelistObj.basic();
+				local.safeListObj = variables.safelistObj.basic();
 				break;
 			case "simpleText":
-				local.whiteListObj = variables.safelistObj.simpleText();
+				local.safeListObj = variables.safelistObj.simpleText();
 				break;
 			case "relaxed":
-				local.whiteListObj = variables.safelistObj.relaxed();
+				local.safeListObj = variables.safelistObj.relaxed();
 				break;
 			case "basicWithImages":
-				local.whiteListObj = variables.safelistObj.basicWithImages();
+				local.safeListObj = variables.safelistObj.basicWithImages();
 				break;			
 			default:
 				if (structKeyExists(variables.safelists,arguments.safelist)) {
-					local.whiteListObj = variables.safelists[arguments.safelist];
+					local.safeListObj = variables.safelists[arguments.safelist];
 				}
 				else {
 					throw("Safelist #arguments.safelist# not defined");
@@ -200,7 +208,7 @@ component {
 
 		}
 
-		return local.whiteListObj;
+		return local.safeListObj;
 	}
 
 	/**
@@ -297,15 +305,16 @@ component {
 
 		for (local.attribute in local.attributes) {
 			local.key = local.attribute.getKey();
+			local.val = local.attribute.getValue() ? : true;
 			if (Left(local.key,5) == "data-") {
 				if (!StructKeyExists(retVal,"data")) {
 					retVal["data"] = {};
 				}
 				local.key = ListRest(local.key,"-");
-				retVal["data"][local.key] = local.attribute.getValue();
+				retVal["data"][local.key] = local.val;
 			}
 			else {
-				retVal[local.key] = local.attribute.getValue();
+				retVal[local.key] = local.val;
 			}
 		}
 		return retVal;
