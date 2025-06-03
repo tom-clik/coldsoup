@@ -12,11 +12,14 @@ public class CommentRemover {
     RemoveCommentsVisitor visitor;
 
     public CommentRemover() {
-        visitor = new RemoveCommentsVisitor();
+       
     }
 
     public void removeComments(org.jsoup.nodes.Node document) {
-         document.traverse(visitor);
+        RemoveCommentsVisitor visitor  = new RemoveCommentsVisitor();
+        document.traverse(visitor);
+        visitor.removeComments();
+
     }
     
 }
