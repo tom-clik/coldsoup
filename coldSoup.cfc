@@ -478,7 +478,7 @@ component {
 	 * Warning! This is an extremely inefficient method of doing this. Do not call on big documents
 	 * The official solution to this is to use a node visitor, but I haven't cracked doing that in CFML
 	 *
-	 * I might write a Java class to do a generic pattern match or something.
+	 * I have written a java class to do this, but it won't load in Lucee
 	 */
 	public void function removeComments(required document) localmode=true {
 

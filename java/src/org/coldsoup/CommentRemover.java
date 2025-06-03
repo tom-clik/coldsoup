@@ -9,22 +9,10 @@ import org.jsoup.select.NodeVisitor;
 
 public class CommentRemover {
     
-    // Private static instance of the class (singleton)
-    private static CommentRemover instance;
-    
-    // Private instance variable for the visitor
-    private RemoveCommentsVisitor visitor;
-   
-    private CommentRemover() {
-        visitor = new RemoveCommentsVisitor();
-    }
+    RemoveCommentsVisitor visitor;
 
-    // Public static method to get the instance of the singleton
-    public static CommentRemover getInstance() {
-        if (instance == null) {
-            instance = new CommentRemover();
-        }
-        return instance;
+    public CommentRemover() {
+        visitor = new RemoveCommentsVisitor();
     }
 
     public void removeComments(org.jsoup.nodes.Node document) {

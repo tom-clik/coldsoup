@@ -5,8 +5,9 @@ import org.jsoup.nodes.Comment;
 import org.jsoup.select.NodeVisitor;
 
 public class RemoveCommentsVisitor implements NodeVisitor {
+
     public void head(Node node, int depth) {
-        if (node != null && node instanceof Comment) {
+        if (node instanceof Comment) {
             node.remove();
         }
     }
@@ -14,4 +15,5 @@ public class RemoveCommentsVisitor implements NodeVisitor {
     public void tail(Node node, int depth) {
         // no-op
     }
+
 }
