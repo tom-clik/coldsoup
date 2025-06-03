@@ -11,9 +11,8 @@ public class TestRemoveComments {
         System.out.println("Before:");
         System.out.println(doc.html());
 
-        // Use your custom visitor
-        CommentRemover remover = new CommentsRemover();
-        remove.removeComments(doc);
+        CommentRemover remover = new CommentRemover();
+        remover.removeComments(doc);
 
         System.out.println("\nAfter:");
         System.out.println(doc.html());

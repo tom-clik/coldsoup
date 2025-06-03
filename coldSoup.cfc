@@ -486,10 +486,12 @@ component {
 	 *
 	 * Warning! This is an extremely inefficient method of doing this. Do not call on big documents
 	 * The official solution to this is to use a node visitor, but I haven't cracked doing that in CFML
-	 *
-	 * I have written a java class to do this, but it won't load in Lucee
-	 *
+	 ** 
 	 * If you just want to strip comments from final version, remove them from the HTML string at the end
+	 *
+	 * I have written a java node visitor, but it's not going to work using the OSGI version of Jsoup. 
+	 * Preumably I would have to bundle JSOUP and this into a package.
+	 * 
 	 */
 	public void function removeComments(required document) localmode=true {
 
@@ -506,8 +508,7 @@ component {
 			}
 		}
 
-		// This throw null pointer exception in Lucee context. The class runs ok in a purely
-		// Java context.
+		// Doesn't work without Jsoup in server classpath
 		// nodeVisitor = createObject("java", "org.coldsoup.RemoveCommentsVisitor");
 		// arguments.document.traverse(nodeVisitor);
 

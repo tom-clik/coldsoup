@@ -9,8 +9,6 @@ import org.jsoup.select.NodeVisitor;
 
 public class CommentRemover {
     
-    RemoveCommentsVisitor visitor;
-
     public CommentRemover() {
        
     }
@@ -18,7 +16,6 @@ public class CommentRemover {
     public void removeComments(org.jsoup.nodes.Node document) {
         RemoveCommentsVisitor visitor  = new RemoveCommentsVisitor();
         document.traverse(visitor);
-        visitor.removeComments();
 
     }
     
