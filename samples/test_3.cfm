@@ -9,8 +9,14 @@ test = coldSoup.XMLNode2Struct(doc.select("viewport").first());
 
 WriteDump(test);
 
-
-markdown = new markdown.flexmark(attributes=1);
+// should strip tabs from line starts of text node
 writeOutput("<pre>#test.testing#</pre>");
-writeOutput(markdown.toHtml(test.testing));
+
+try {
+	markdown = new markdown.flexmark(attributes=1);
+	writeOutput(markdown.toHtml(test.testing));
+}
+catch (any e) {
+	// library not installed
+}
 </cfscript>
