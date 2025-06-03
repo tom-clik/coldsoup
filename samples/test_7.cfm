@@ -8,7 +8,8 @@ writeOutput("<h3>Custom safelist</h3>");
 safeList = coldSoup.getsafelist("none");
 
 // see the methods or refer to JSoup docs
-// writeDump(safeList);
+
+
 safeList.addTags(javacast("String[]",  ["h1","h2"]));
 safeList.addAttributes(javacast("String","h2"),javacast("String[]",  ["id"]));
 safeList.addEnforcedAttribute(javacast("String","h2"),javacast("String","data-checked"),javacast("String","true"));

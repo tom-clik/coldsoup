@@ -19,7 +19,7 @@ Preview as web page to see menu of tests.
 setUpTests();
 
 // new style instantiation will call init().
-coldSoup = new coldsoup.coldSoup();
+coldSoup = new coldsoup.coldSoup(server.system.environment.javalib & "\jsoup-1.20.1.jar");
 
 param name="request.rc.test" default="";
 

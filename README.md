@@ -6,13 +6,16 @@ CFML wrapper for [JSoup](https://www.jsoup.org).
 
 Working with JSoup in CFML often requires JavaCasting variables and quite cumbersome syntax. This component provides some simpler CFML methods.
 
+## Important Note
+
+JSOUP has become incredibly popular and many other Java Libraries now bundle it, including the ever popular Flexmark. To ensure we load the library we want, we have to use the OSGI system in Lucee. This is very simple, but we need to know the path to the JSOUP Jar. In many ways this is better than loading through the class path.
+
 ## Usage
 
-Assumes Jsoup is installed in your server class path.
 
 1. Instantiate the component as a singleton in a shared scope, e.g. application
 	```cfml
-	application.coldsoup = new coldSoup();
+	application.coldsoup = new coldSoup(pathtoJAR);
 	```
 
 2. Call static methods as required, e.g.

@@ -14,26 +14,32 @@ component {
 	/**
 	 * Pseudo constructor
 	 */
-	public coldSoup function init() {
+	public coldSoup function init(required string jarpath) {
+
+		// Install the bundle through OSGI mechanism to avoid conflicts
+		local.CFMLEngine = createObject( "java", "lucee.loader.engine.CFMLEngineFactory" ).getInstance();
+		local.OSGiUtil = createObject( "java", "lucee.runtime.osgi.OSGiUtil" );
+		local.resource = CFMLEngine.getResourceUtil().toResourceExisting( getPageContext(), jarpath );
+		local.bundle = OSGiUtil.installBundle( CFMLEngine.getBundleContext(), local.resource, true);
 
 		// expose the parsers as public objects
-		this.jsoup             = createObject( "java", "org.jsoup.Jsoup" );
-		this.parser            = createObject( "java", "org.jsoup.parser.Parser" );
+		this.jsoup             = createObject( "java", "org.jsoup.Jsoup", "org.jsoup");
+		this.parser            = createObject( "java", "org.jsoup.parser.Parser", "org.jsoup" );
 		this.XMLParser         = this.parser.XMLParser();
 
 		// use addSafelist and getSafelist to use safelists
-		variables.safelistObj = createObject( "java", "org.jsoup.safety.Safelist" );
+		variables.safelistObj = createObject( "java", "org.jsoup.safety.Safelist", "org.jsoup" );
 		variables.safeLists   = {};
 		
 		// This really ought to be private
-		this.xmlSyntax         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings$Syntax").xml;
+		this.xmlSyntax         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings$Syntax", "org.jsoup").xml;
 
 		// output formats. You can use a document's outputSettings() with these objects
 		// or call outputSettings(doc, "name") in this component
-		this.Pretty            = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(true);
-		this.notPretty         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false);
-		this.xml               = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
-		this.prettyXML         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings").prettyPrint(true).outline(true).syntax(this.xmlSyntax);
+		this.Pretty            = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(true).outline(true);
+		this.notPretty         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(false).outline(false);
+		this.xml               = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
+		this.prettyXML         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(true).outline(true).syntax(this.xmlSyntax);
 
 		return this;
 
@@ -49,14 +55,7 @@ component {
 	public string function clean(required string html, safelist="basic") {
 
 		local.safeListObj = getSafelist(arguments.safelist);
-		local.safeListObj = variables.safeListObj.basic();
-		local.jstring = Javacast('string', arguments.html);
-		writeDump(local.jstring);
-
-
-
-		writeDump(this.jsoup.isValid(local.jstring,local.safeListObj))
-		local.rethtml      = this.jsoup.clean( local.jstring ,local.safeListObj);
+		local.rethtml      = this.jsoup.clean( arguments.html ,local.safeListObj);
 		
 		return local.rethtml;
 	}
