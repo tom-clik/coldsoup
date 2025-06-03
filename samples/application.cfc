@@ -4,8 +4,8 @@ component {
 
 		request.prc = {};
 		request.rc = Duplicate(url);
-		request.prc.coldsoup = new coldsoup.coldSoup();
-
+		structAppend(request.rc, form);
+		
 		local.script = ListLast(arguments.targetPage,"/");
 		
 		// ensure we only preview via index page
