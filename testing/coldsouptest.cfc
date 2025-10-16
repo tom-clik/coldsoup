@@ -19,7 +19,7 @@ component extends="testbox.system.BaseSpec"{
 		variables.dodgyHTML = FileRead("dodgy.html");
 		variables.rubbishHTML = FileRead("rubbish.html");
 		variables.someXML = FileRead("someXML.xml");
-		variables.coldSoup = new coldsoup.coldSoup();
+		variables.coldSoup = new coldsoup.coldSoup( server.system.environment.javalib & "\jsoup-1.20.1.jar" );
 	}
 
 	function afterTests(){}
@@ -62,6 +62,7 @@ component extends="testbox.system.BaseSpec"{
 		$assert.assert(IsArray(local.data.settings.viewport),"Viewport key is not array");
 
 	}
+	
 	/**
 	* @test
 	*/
@@ -85,8 +86,5 @@ component extends="testbox.system.BaseSpec"{
 		$assert.assert(local.nodeInfo.tagname eq "h2","tagname incorrect for created node");
 
 	}
-
-
-
 
 }
