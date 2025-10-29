@@ -41,6 +41,11 @@ component {
 		this.xml               = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
 		this.prettyXML         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(true).outline(true).syntax(this.xmlSyntax);
 
+
+		// Pattern for removing comments
+		patternObj = createObject( "java", "java.util.regex.Pattern");
+		this.commentsPattern = patternObj.compile("<!--.*?-->", patternObj.DOTALL + patternObj.MULTILINE );
+		
 		return this;
 
 	}
@@ -487,7 +492,7 @@ component {
 	 * Warning! This is an extremely inefficient method of doing this. Do not call on big documents
 	 * The official solution to this is to use a node visitor, but I haven't cracked doing that in CFML
 	 ** 
-	 * If you just want to strip comments from final version, remove them from the HTML string at the end
+	 * If you just want to strip comments from final version, remove them from the HTML string at the end (see `removeHTMLComments()`).
 	 *
 	 * I have written a java node visitor, but it's not going to work using the OSGI version of Jsoup. 
 	 * Preumably I would have to bundle JSOUP and this into a package.
@@ -513,5 +518,13 @@ component {
 		// arguments.document.traverse(nodeVisitor);
 
 	}
+
+	public string function removeHTMLComments(required string html) localmode=true {
+		
+		return this.commentsPattern.matcher(arguments.html).replaceAll("");
+
+	}
+
+
 
 }

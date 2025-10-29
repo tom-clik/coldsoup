@@ -43,21 +43,32 @@ function setUpTests() {
 	request.prc.dodgyHTML = FileRead(ExpandPath("../testing/dodgy.html"),"utf-8");
 }
 
-function displayMenu() {
-	tests = directoryList(getDirectoryFromPath(getCurrentTemplatePath()),false,"path","test_*");
+function displayMenu() localmode=true {
+	
+	testlist = directoryList(getDirectoryFromPath(getCurrentTemplatePath()),false,"path","test_*");
+	tests = {};
+	for (test in testlist) {
+		info = getTestInfo(test);
+		tests[info.num] = info;
+	}
+
+
+	testsOrdered = StructSort( tests, "numeric", "asc", "num" );
 	
 	writeOutput("<ol>");
-	for (test in tests) {
-		local.info = getTestInfo(test);
-		writeOutput("<li><h2><a href=""?test=#local.info.num#"">#local.info.title#</a></h2>");
-		writeOutput("<p>#local.info.description#</li>");
+
+	for (num in testsOrdered) {
+		test = tests[num];
+		writeOutput("<li><h2><a href=""?test=#test.num#"">#test.title#</a></h2>");
+		writeOutput("<p>#test.description#</li>");
 	}
 	writeOutput("</ol>");
 }
 
 struct function getTestInfo(filename) {
+
 	local.text = FileRead(arguments.filename);
-	local.num = reMatchNoCase("\d", arguments.filename);
+	local.num = reMatchNoCase("\d+", arguments.filename);
 	local.data = {"num"=local.num[1]};
 	for (local.field in ['title','description']) {
 		local.val = reMatchNoCase("\@#local.field# .*?\r", local.text);
@@ -65,7 +76,6 @@ struct function getTestInfo(filename) {
 	}
 	return local.data;
 	
-
 }
 
 </cfscript>
