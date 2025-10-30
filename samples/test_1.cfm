@@ -6,8 +6,10 @@
 
 html = FileRead(ExpandPath("../testing/rubbish.html"))
 
-writeOutput("<pre>#htmlEditFormat(html)#</pre>");
+displayCode( html );
+
 doc = coldSoup.parse(html);
+
 displayCode(coldsoup.getHTML(doc));
 
 </cfscript>
