@@ -187,7 +187,7 @@ component {
 		required string  name, 
 		required object  safelist) {
 		
-		if (! IsInstanceOf( obj=arguments.safelist, type="org.jsoup.safety.Safelist" )) {
+		if ( arguments.safelist.getClass().getName() != "org.jsoup.safety.Safelist" ) {
 			throw("Invald safe list object");
 		}
 
@@ -253,7 +253,7 @@ component {
 		// simple single text node is added as content field.
 		if (Trim(arguments.xmlNode.ownText()) neq "") {
 			childNodes = arguments.xmlNode.childNodes();
-			if (childNodes.size() == 1 && IsInstanceOf(childNodes.get(0), "org.jsoup.nodes.TextNode")) {
+			if (childNodes.size() == 1 && childNodes.get(0).getClass().getName() == "org.jsoup.nodes.TextNode" ) {
 				// retVal["content"] =arguments.xmlNode.ownText());
 				retVal["content"] =  trim(reReplace( childNodes.get(0).getWholeText(),"([\n\r])\t+","\1","all"));
 			}
@@ -277,7 +277,7 @@ component {
 			// assume any element with mix of text and tags is html
 			if (Trim(child.ownText()) neq "") {
 				childNodes = child.childNodes();
-				if (childNodes.size() == 1 && IsInstanceOf(childNodes.get(0), "org.jsoup.nodes.TextNode")) {
+				if (childNodes.size() == 1 && childNodes.get(0).getClass().getName() == "org.jsoup.nodes.TextNode" ) {
 					retVal[tagName] = Trim(reReplace( childNodes.get(0).getWholeText(),"([\n\r])\t+","\1","all"));
 
 				}
@@ -316,7 +316,8 @@ component {
 	 */
 	public struct function getAttributes(required object xmlNode) {
 
-		if (! IsInstanceOf(arguments.xmlNode, "org.jsoup.nodes.Element")) {
+		local.type = nodeType(arguments.xmlNode);
+		if ( local.type != "Document" && local.type != "Element"  ) {
 			throw("Invalid xmlNode");
 		}
 
@@ -408,20 +409,9 @@ component {
 	 * Return java class name for node (Element|TextNode|Comment|DataNode)
 	 */
 	public string function nodeType(required node) {
-		local.type = "";
-		if (IsInstanceOf(arguments.node, "org.jsoup.nodes.Element")) {
-			local.type = "Element";	
-		}
-		else if (IsInstanceOf(arguments.node, "org.jsoup.nodes.TextNode")) {
-			local.type = "TextNode";	
-		} 
-		else if (IsInstanceOf(arguments.node, "org.jsoup.nodes.Comment")) {
-			local.type = "Comment";	
-		}
-		else if (IsInstanceOf(arguments.node, "org.jsoup.nodes.DataNode")) {
-			local.type = "DataNode";	
-		}
-		return local.type;
+		
+		return ListLast( arguments.node.getClass().getName(), ".") ;
+		
 	}
 
 	/**

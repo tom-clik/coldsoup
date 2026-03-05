@@ -5,7 +5,7 @@
 
 writeOutput("<pre>#htmlEditFormat(request.prc.dodgyHTML)#</pre>");
 writeOutput("<h3>Custom safelist</h3>");
-safeList = coldSoup.getsafelist("none");
+safeList = Duplicate( coldSoup.getsafelist("none") );
 
 // see the methods or refer to JSoup docs
 
