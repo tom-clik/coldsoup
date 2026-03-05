@@ -19,7 +19,7 @@ component extends="testbox.system.BaseSpec"{
 		variables.dodgyHTML = FileRead("dodgy.html");
 		variables.rubbishHTML = FileRead("rubbish.html");
 		variables.someXML = FileRead("someXML.xml");
-		variables.coldSoup = new coldsoup.coldSoup( server.system.environment.javalib & "\jsoup-1.20.1.jar" );
+		variables.coldSoup = new coldsoup.coldSoup();
 	}
 
 	function afterTests(){}
