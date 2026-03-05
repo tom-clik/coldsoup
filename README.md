@@ -50,3 +50,30 @@ node = coldSoup.createNode("h2","my heading");
 ```
 
 For further examples, see samples.
+
+## Removing HTML comments in Lucee
+
+Yes—this can be done directly in Lucee/CFML without compiling a custom Java visitor.
+
+This component already includes two built-in options:
+
+1. `removeComments(document)`
+   - Recursively walks a parsed Jsoup document and removes comment nodes.
+   - Use this when you want comments removed from the in-memory DOM before further processing.
+
+2. `removeHTMLComments(html)`
+   - Removes `<!-- -->` comments from a string via a Java regex pattern.
+   - Use this if you only need stripped output text at the end.
+
+Example:
+
+```cfml
+doc = coldSoup.parse(html);
+coldSoup.removeComments(doc);
+cleanedHTML = doc.html();
+
+// or, for final output only:
+cleanedHTML = coldSoup.removeHTMLComments(html);
+```
+
+If you are using Lucee's newer Java interop/import features, they can help for many Java calls, but they are not required for comment removal in this library.

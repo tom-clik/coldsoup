@@ -489,13 +489,11 @@ component {
 	/**
 	 * @hint Remove comments from HTML
 	 *
-	 * Warning! This is an extremely inefficient method of doing this. Do not call on big documents
-	 * The official solution to this is to use a node visitor, but I haven't cracked doing that in CFML
+	 * Warning! This recursive approach is less efficient on very large documents.
+	 * Prefer removeHTMLComments() when you only need to strip comments from final output.
 	 ** 
-	 * If you just want to strip comments from final version, remove them from the HTML string at the end (see `removeHTMLComments()`).
-	 *
-	 * I have written a java node visitor, but it's not going to work using the OSGI version of Jsoup. 
-	 * Preumably I would have to bundle JSOUP and this into a package.
+	 * If you need comments removed from the in-memory DOM before other transformations,
+	 * use this function.
 	 * 
 	 */
 	public void function removeComments(required document) localmode=true {
