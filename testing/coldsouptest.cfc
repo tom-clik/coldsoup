@@ -56,8 +56,12 @@ component extends="testbox.system.BaseSpec"{
 			$assert.fail( "Failed to parse XML document");
 		}
 
-		
-		local.data = variables.coldSoup.XMLNode2Struct(local.doc);
+		try {
+			local.data = variables.coldSoup.XMLNode2Struct(local.doc);
+		}
+		catch (Any e) {
+			$assert.fail( "Failed to convert XML to struct");
+		}
 		$assert.assert(IsStruct(local.data),"Data returned form XML is not struct");
 		$assert.assert(IsArray(local.data.settings.viewport),"Viewport key is not array");
 

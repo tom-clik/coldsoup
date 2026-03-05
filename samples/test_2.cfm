@@ -6,6 +6,10 @@
 doc = coldSoup.parseXML(FileRead(ExpandPath("../testing/someXML.xml")));
 coldsoup.outputSettings(doc, "prettyXML");
 
+// writeDump(var=doc,abort=1);
+
+local.data = coldSoup.XMLNode2Struct(doc);
+
 displayCode( doc.html() );
 
 
