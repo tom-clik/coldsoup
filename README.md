@@ -8,14 +8,14 @@ Working with JSoup in CFML often requires JavaCasting variables and quite cumber
 
 ## Important Note
 
-JSOUP has become incredibly popular and many other Java Libraries now bundle it, including the ever popular Flexmark. To ensure we load the library we want, we have to use the OSGI system in Lucee. This is very simple, but we need to know the path to the JSOUP Jar. In many ways this is better than loading through the class path.
+JSOUP has become incredibly popular and many other Java Libraries now bundle it, including the ever popular Flexmark. ColdSoup now uses Lucee's JavaSettings integration with Maven coordinates, so the JSoup JAR is resolved and downloaded automatically by default.
 
 ## Usage
 
 
-1. Instantiate the component as a singleton in a shared scope, e.g. application
+1. Instantiate the component as a singleton in a shared scope, e.g. application (optionally pass a JSoup version or full JavaSettings struct).
 	```cfml
-	application.coldsoup = new coldSoup(pathtoJAR);
+	application.coldsoup = new coldSoup();
 	```
 
 2. Call static methods as required, e.g.
