@@ -19,7 +19,7 @@ component {
 		// Install the bundle through OSGI mechanism to avoid conflicts
 		local.CFMLEngine = createObject( "java", "lucee.loader.engine.CFMLEngineFactory" ).getInstance();
 		local.OSGiUtil = createObject( "java", "lucee.runtime.osgi.OSGiUtil" );
-		local.resource = CFMLEngine.getResourceUtil().toResourceExisting( getPageContext(), jarpath );
+		local.resource = CFMLEngine.getResourceUtil().toResourceExisting( getPageContext(), arguments.jarpath );
 		local.bundle = OSGiUtil.installBundle( CFMLEngine.getBundleContext(), local.resource, true);
 
 		// expose the parsers as public objects
@@ -361,8 +361,8 @@ component {
 				 string classes
 		) {
 
-		var node = createObject("java", "org.jsoup.nodes.Element").init(
-			Javacast('string', arguments.tagName)
+		var node = createObject("java", "org.jsoup.nodes.Element", "org.jsoup").init(
+			Javacast('String', arguments.tagName)
 		);
 
 		if (IsDefined("arguments.text")) {
@@ -382,7 +382,7 @@ component {
 	 * Create a text node
 	 */
 	public object function createTextNode(required string text) {
-		var node = createObject("java", "org.jsoup.nodes.TextNode").init(
+		var node = createObject("java", "org.jsoup.nodes.TextNode", "org.jsoup").init(
 			javacast('string', arguments.text)
 		);
 		
@@ -504,7 +504,7 @@ component {
 		}
 
 		// Doesn't work without Jsoup in server classpath
-		// nodeVisitor = createObject("java", "org.coldsoup.RemoveCommentsVisitor");
+		// nodeVisitor = createObject("java", "org.coldsoup.RemoveCommentsVisitor", "org.jsoup");
 		// arguments.document.traverse(nodeVisitor);
 
 	}
