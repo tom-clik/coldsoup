@@ -18,8 +18,7 @@ Preview as web page to see menu of tests.
 
 setUpTests();
 
-// new style instantiation will call init().
-coldSoup = new coldsoup.coldSoup();
+coldSoup = new coldsoup.coldSoup(request.prc.jar);
 
 param name="request.rc.test" default="";
 
@@ -39,7 +38,6 @@ function displayCode(html) {
 }
 
 function setUpTests() {
-	request.prc = {};
 	request.prc.dodgyHTML = FileRead(ExpandPath("../testing/dodgy.html"),"utf-8");
 }
 
