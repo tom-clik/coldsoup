@@ -14,44 +14,32 @@ component {
 	/**
 	 * Pseudo constructor
 	 */
-	public coldSoup function init(
-		string jsoupVersion="1.20.1",
-		struct javaSettings={}
-	) {
+	public coldSoup function init(required string jarpath) {
 
-		if (StructIsEmpty(arguments.javaSettings)) {
-			variables.javaSettings = {
-				maven : [
-					{
-						groupId : "org.jsoup",
-						artifactId : "jsoup",
-						version : arguments.jsoupVersion
-					}
-				]
-			};
-		}
-		else {
-			variables.javaSettings = arguments.javaSettings;
-		}
+		// Install the bundle through OSGI mechanism to avoid conflicts
+		local.CFMLEngine = createObject( "java", "lucee.loader.engine.CFMLEngineFactory" ).getInstance();
+		local.OSGiUtil = createObject( "java", "lucee.runtime.osgi.OSGiUtil" );
+		local.resource = CFMLEngine.getResourceUtil().toResourceExisting( getPageContext(), jarpath );
+		local.bundle = OSGiUtil.installBundle( CFMLEngine.getBundleContext(), local.resource, true);
 
 		// expose the parsers as public objects
-		this.jsoup             = loadJavaClass( "org.jsoup.Jsoup" );
-		this.parser            = loadJavaClass( "org.jsoup.parser.Parser" );
+		this.jsoup             = createObject( "java", "org.jsoup.Jsoup", "org.jsoup");
+		this.parser            = createObject( "java", "org.jsoup.parser.Parser", "org.jsoup" );
 		this.XMLParser         = this.parser.XMLParser();
 
 		// use addSafelist and getSafelist to use safelists
-		variables.safelistObj = loadJavaClass( "org.jsoup.safety.Safelist" );
+		variables.safelistObj = createObject( "java", "org.jsoup.safety.Safelist", "org.jsoup" );
 		variables.safeLists   = {};
 		
 		// This really ought to be private
-		this.xmlSyntax         = loadJavaClass( "org.jsoup.nodes.Document$OutputSettings$Syntax" ).xml;
+		this.xmlSyntax         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings$Syntax", "org.jsoup").xml;
 
 		// output formats. You can use a document's outputSettings() with these objects
 		// or call outputSettings(doc, "name") in this component
-		this.Pretty            = loadJavaClass( "org.jsoup.nodes.Document$OutputSettings" ).prettyPrint(true).outline(true);
-		this.notPretty         = loadJavaClass( "org.jsoup.nodes.Document$OutputSettings" ).prettyPrint(false).outline(false);
-		this.xml               = loadJavaClass( "org.jsoup.nodes.Document$OutputSettings" ).prettyPrint(false).outline(false).syntax(this.xmlSyntax);
-		this.prettyXML         = loadJavaClass( "org.jsoup.nodes.Document$OutputSettings" ).prettyPrint(true).outline(true).syntax(this.xmlSyntax);
+		this.Pretty            = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(true).outline(true);
+		this.notPretty         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(false).outline(false);
+		this.xml               = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(false).outline(false).syntax(this.xmlSyntax);
+		this.prettyXML         = createObject( "java", "org.jsoup.nodes.Document$OutputSettings", "org.jsoup").prettyPrint(true).outline(true).syntax(this.xmlSyntax);
 
 
 		// Pattern for removing comments
@@ -60,10 +48,6 @@ component {
 		
 		return this;
 
-	}
-
-	private any function loadJavaClass(required string className) {
-		return createObject("java", arguments.className, variables.javaSettings);
 	}
 
 	/**
@@ -377,7 +361,7 @@ component {
 				 string classes
 		) {
 
-		var node = loadJavaClass("org.jsoup.nodes.Element").init(
+		var node = createObject("java", "org.jsoup.nodes.Element").init(
 			Javacast('string', arguments.tagName)
 		);
 
@@ -398,7 +382,7 @@ component {
 	 * Create a text node
 	 */
 	public object function createTextNode(required string text) {
-		var node = loadJavaClass("org.jsoup.nodes.TextNode").init(
+		var node = createObject("java", "org.jsoup.nodes.TextNode").init(
 			javacast('string', arguments.text)
 		);
 		
