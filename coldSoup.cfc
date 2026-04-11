@@ -515,6 +515,18 @@ component {
 
 	}
 
+	// clone() method broken in some Lucee versions. This is a sledgehammer fix
+	public object function clone(required any node) localmode=true {
+		
+		if ( arguments.node.getClass().getName() eq "org.jsoup.nodes.Document" ) {
+			return this.jsoup.parse( arguments.node.outerHtml() );
+		}
+
+		tmpDoc = this.jsoup.parseBodyFragment( arguments.node.outerHtml() );
+		return tmpDoc.body().child( 0 );
+
+	}
+
 
 
 }
