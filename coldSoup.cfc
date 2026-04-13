@@ -515,7 +515,7 @@ component {
 
 	}
 
-	// clone() method broken in some Lucee versions. This is a sledgehammer fix
+	// clone() method broken in some Lucee versions (LDEV-5862). This is a sledgehammer fix
 	public object function clone(required any node) localmode=true {
 		
 		if ( arguments.node.getClass().getName() eq "org.jsoup.nodes.Document" ) {
